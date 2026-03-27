@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import type { Project } from "../types/types"
 import { InputField } from "./Field/InputField";
 import { Checkbox } from "../components/ui/checkBox";
-import{ useLocalStorage } from "./LocalStorage/useLocalStorage";
 
 export function ProjectCard() {
     const [project, setProject] = useState<Project[]>(() =>{
@@ -62,6 +61,8 @@ export function ProjectCard() {
         <br />
         <div className="grid grid-cols-1 gap-5">
         {project.map((proj) => (
+            <div>
+            <a href={`/user/task/${proj.id}`}>
             <li key={proj.id} className=" flex list-none border rounded-sm p-2 bg-gray-200 w-1/2 h-15 justify-between items-center ">
                 <span>{proj.textProject}</span>
                 <div className="grid grid-cols-2 gap-2">
@@ -73,6 +74,8 @@ export function ProjectCard() {
                 <button onClick={() => deleteProject(proj.id)} className=" border rounded-sm text-red-500 hover:bg-red-300 hover:scale-110">Delete</button>
                 </div>
             </li>
+            </a>
+            </div>
         ))}
       </div>
     </div>

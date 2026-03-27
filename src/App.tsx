@@ -14,7 +14,7 @@ function App() {
       <Routes>
         <Route path="/user/dashboard" element={<UserDashboard />} />
         <Route path="/user/tasks" element={<MyTasks />} />
-        <Route path="/user/task-details:id" element={<ViewTaskDetails />} />
+        <Route path="/user/task/:taskId" element={<ViewTaskDetails />} />
       </Routes>
     </Layout>
    </BrowserRouter>
