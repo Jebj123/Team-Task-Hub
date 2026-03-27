@@ -1,12 +1,12 @@
 export type Project = {
     id: number;
     name: string;
-    tasks: Task[];
+    completed: boolean;
+    extendedTasks: Task[];
 }
 
 export type Task = {
     id: number;
-    name: string;
+    text: string;
     isCompleted: boolean;
-    projectId: number;
 }
