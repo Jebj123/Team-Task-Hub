@@ -1,11 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { Project } from "../types/types"
 import { InputField } from "./Field/InputField";
 import { Checkbox } from "../components/ui/checkBox";
 import{ useLocalStorage } from "./LocalStorage/useLocalStorage";
 
 export function ProjectCard() {
-    const [project, setProject] = useState<Project[]>([]);
+    const [project, setProject] = useState<Project[]>(() =>{
+        const storedProjects = localStorage.getItem("project");
+        return storedProjects ? JSON.parse(storedProjects) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem("project", JSON.stringify(project));
+    }, [project]);
+
     const [projectInput, setProjectInput] = useState("");
    
 
@@ -24,7 +32,6 @@ export function ProjectCard() {
         localStorage.setItem("projects", JSON.stringify([...project, newProject]));
         setProject([...project, newProject]);
         setProjectInput("");
-        console.log(data)
         }
     }
 
