@@ -1,7 +1,7 @@
 import Layout from './Layout/Layout'
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import MyTasks from "./user/MyTasks"
+import MyTasks from "./user/newProjectButton"
 import UserDashboard from './user/UserDashboard'
 import ViewTaskDetails from "./user/ViewTaskDetails"
 
