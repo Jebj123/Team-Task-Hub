@@ -1,15 +1,23 @@
+import Layout from './Layout/Layout'
 import './App.css'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import MyTasks from "./user/MyTasks"
+import UserDashboard from './user/UserDashboard'
+import ViewTaskDetails from "./user/ViewTaskDetails"
+
 
 function App() {
   
   return (
-    <>
-      <div className="App">
-        <h1 className="text-3xl font-bold underline">
-          Hello world!
-        </h1>
-      </div>
-    </>
+  <BrowserRouter>
+    <Layout>
+      <Routes>
+        <Route path="/user/dashboard" element={<UserDashboard />} />
+        <Route path="/user/tasks" element={<MyTasks />} />
+        <Route path="/user/task-details:id" element={<ViewTaskDetails />} />
+      </Routes>
+    </Layout>
+   </BrowserRouter>
   )
 }
 

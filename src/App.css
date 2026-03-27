@@ -1,3 +1,10 @@
+@import "tailwindcss" base;
+@import "tailwindcss" components;
+@import "tailwindcss" utilities;
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;
