@@ -14,8 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <span className="flex pt-6 pl-10 text-xl font-bold text-white">Team Task Hub</span>
           </div>
           <div className="flex pl-195">
-            <Link to="/user/tasks" className="text-5xl pr-10 pt-8">MyTasks</Link>
-            <Link to="/user/dashboard" className="text-5xl pt-8">Dashboard</Link>
+            <Link to="/user/project" className="text-5xl pr-10 pt-8">My Projects</Link>
           </div>
           </div>
         </nav>

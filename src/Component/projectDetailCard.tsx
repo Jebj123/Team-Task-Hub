@@ -1,0 +1,22 @@
+import { useState } from "react";
+import type { Project } from "../types/types";
+import { useParams } from "react-router-dom";
+
+   
+    export function ProjectDetailCard(){
+        const [project, setProject] = useState<Project[]>(() =>{
+            const storedProjects = localStorage.getItem("project");
+            return storedProjects ? JSON.parse(storedProjects) : [];
+        });
+        const { projectId } = useParams();
+
+        const projectDetail = project.find((p) => p.id === Number(projectId));
+        if(!projectDetail){
+            return <div>Project not found</div>;
+        }
+        return (
+            <div className="flex list-none border rounded-sm p-2 bg-gray-200 w-1/2 h-15 justify-between items-center">
+                <h1>{projectDetail.textProject}</h1>
+            </div>
+        )
+    }

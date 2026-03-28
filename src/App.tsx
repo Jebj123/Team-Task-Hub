@@ -1,9 +1,9 @@
 import Layout from './Layout/Layout'
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import MyTasks from "./user/newProjectButton"
-import UserDashboard from './user/UserDashboard'
-import ViewTaskDetails from "./user/ViewTaskDetails"
+import { ViewProjectDetails } from "./user/ViewProjectDetails"
+import NewProject from './user/newProject'
+
 
 
 
@@ -12,9 +12,8 @@ function App() {
   <BrowserRouter>
     <Layout>
       <Routes>
-        <Route path="/user/dashboard" element={<UserDashboard />} />
-        <Route path="/user/tasks" element={<MyTasks />} />
-        <Route path="/user/task/:taskId" element={<ViewTaskDetails />} />
+        <Route path="/user/project" element={<NewProject />} />
+        <Route path="/user/task/:projectId" element={<ViewProjectDetails />} />
       </Routes>
     </Layout>
    </BrowserRouter>

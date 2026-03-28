@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import type { Project } from "../types/types"
 import { InputField } from "./Field/InputField";
 import { Checkbox } from "../components/ui/checkBox";
@@ -14,10 +14,12 @@ export function ProjectCard() {
     }, [project]);
 
     const [projectInput, setProjectInput] = useState("");
+
    
 
     const addProject =  (e) => {
         e.preventDefault();
+
 
         if (!projectInput || projectInput === "") {
             window.alert("Please enter a project name.");
@@ -27,8 +29,9 @@ export function ProjectCard() {
                 id: Date.now(),
                 textProject: projectInput,
                 completed: false,
+                extendedTasks: [],
             };
-        localStorage.setItem("projects", JSON.stringify([...project, newProject]));
+        localStorage.setItem("project", JSON.stringify(newProject));
         setProject([...project, newProject]);
         setProjectInput("");
         }
@@ -38,43 +41,28 @@ export function ProjectCard() {
     const deleteProject = (id: number) => {
         const updatedProjects = project.filter((proj) => proj.id !== id);
         setProject(updatedProjects);
-        localStorage.setItem("projects", JSON.stringify(updatedProjects));
+        localStorage.setItem("project", JSON.stringify(updatedProjects));
     };
 
-    //toggle verkefni
-    const toggleProject = (id: number) => {
-        const updatedProjects = project.map((proj) => 
-            proj.id === id ? { ...proj, completed: !proj.completed } : proj
-        );
-        setProject(updatedProjects);
-        localStorage.setItem("projects", JSON.stringify(updatedProjects));
-    };
 
     return(
-    <div className="grid w-full h-full pl-200">
-        <div className="grid grid-cols-2 gap-4 w-1/2 pl-50">
+    <div className="grid max-w-full h-full">
+        <div className="grid grid-cols-1 gap-2">
         <InputField  placeholder='Project Name' value={projectInput} onChange={(e) => {setProjectInput(e.target.value)}} />
-        <button onClick={addProject} type='submit' className='w-30 h-8 border rounded-sm transform transition duration-300 hover:scale-110' >Add Project</button>
+        <button onClick={addProject} type='submit' className='gap-0 w-30 h-8 border rounded-sm transform transition duration-300 hover:scale-110' >Add Project</button>
         </div>
         <br/>
         <div className="">
         <br />
         <div className="grid grid-cols-1 gap-5">
         {project.map((proj) => (
-            <div>
+            <div key={proj.id}>
+            <li className=" flex list-none border rounded-sm p-2 bg-gray-200 w-1/2 h-15 justify-between items-center ">
             <a href={`/user/task/${proj.id}`}>
-            <li key={proj.id} className=" flex list-none border rounded-sm p-2 bg-gray-200 w-1/2 h-15 justify-between items-center ">
-                <span>{proj.textProject}</span>
-                <div className="grid grid-cols-2 gap-2">
-                <Checkbox 
-                checked={proj.completed} 
-                onCheckedChange={() => toggleProject(proj.id)} 
-                className="flex "
-                />
-                <button onClick={() => deleteProject(proj.id)} className=" border rounded-sm text-red-500 hover:bg-red-300 hover:scale-110">Delete</button>
-                </div>
-            </li>
+                <span className="text-shadow-lg">{proj.textProject}</span>
             </a>
+                <button onClick={() => deleteProject(proj.id)} className="w-20 border rounded-sm text-red-500 hover:bg-red-300 hover:scale-110">Delete</button>
+            </li>
             </div>
         ))}
       </div>
