@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import type { Project } from "../types/types"
 import { InputField } from "./Field/InputField";
-import { Checkbox } from "../components/ui/checkBox";
+
 
 export function ProjectCard() {
     const [project, setProject] = useState<Project[]>(() =>{
