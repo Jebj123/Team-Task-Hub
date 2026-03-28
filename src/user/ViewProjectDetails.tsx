@@ -3,7 +3,8 @@ import type { Project, Task } from '../types/types';
 import { ProjectDetailCard } from '../Component/projectDetailCard';
 import { InputField } from '../Component/Field/InputField';
 import { Button } from '../components/ui/button';
-import { projectSchema } from '../schema/schema';
+import { useParams } from 'react-router-dom';
+import { Checkbox } from "../components/ui/checkBox";
 
 
 
@@ -11,13 +12,28 @@ import { projectSchema } from '../schema/schema';
 
 export const ViewProjectDetails = () => {
     const [task, setTasks] = useState<Task[]>(() =>{
-        const storedTasks = localStorage.getItem("project");
+        const storedTasks = localStorage.getItem("extendedTasks");
         return storedTasks ? JSON.parse(storedTasks) : [];
       });
      
       useEffect(() => {
-          localStorage.setItem("project", JSON.stringify(task));
+          localStorage.setItem("extendedTasks", JSON.stringify(task));
       }, [task]);
+      
+      const [project, setProject] = useState<Project[]>(() =>{
+              const storedProjects = localStorage.getItem("project");
+              if (storedProjects) {
+              return storedProjects ? JSON.parse(storedProjects) : [];
+              }
+          });
+      
+          useEffect(() => {
+              localStorage.setItem("project", JSON.stringify(project));
+          }, [project]);
+
+      const { projectId } = useParams();
+
+      const[selectedProject, setSelectedProject] = useState(projectId);
   
       const [taskInput, setTaskInput] = useState("");
      
@@ -25,17 +41,18 @@ export const ViewProjectDetails = () => {
       const addTask =  (e) => {
           e.preventDefault();
   
-          if (!taskInput || taskInput === "") {
+          if (!taskInput || taskInput === null) {
                 window.alert("Please enter a task.");
           }
-          if (taskInput.trim()) {
+          if (taskInput) {
               const newTask = {
                   taskId: Date.now(),
                   textTask: taskInput,
+                  projectId : projectId,
                   isCompleted: false,
-                  extendedTasks: [],
+                  extendedTasks: [taskInput],
               };
-          localStorage.setItem("project", JSON.stringify([...task, newTask]));
+          localStorage.setItem("extendedTasks", JSON.stringify([...task, newTask]));
           setTasks([...task, newTask]);
           setTaskInput("");
           }
@@ -56,6 +73,9 @@ export const ViewProjectDetails = () => {
           setTasks(updatedTasks);
           localStorage.setItem("extendedTasks", JSON.stringify(updatedTasks));
       };
+      const tasksForSelectedProject = task.filter(
+    (task) => task.projectId.toString() === projectId
+  );
   return (
     <div className="grid ">
         <ProjectDetailCard />
@@ -63,14 +83,13 @@ export const ViewProjectDetails = () => {
         <button onClick={addTask} type='submit' className='w-30 h-8 border rounded-sm transform transition duration-300 hover:scale-110' >Add Task</button>
         <br />
         <div className="grid grid-cols-1 gap-5">
-        {task.map((t) => (
+        {tasksForSelectedProject.map((t) => (
             <div key={t.taskId}>
             <li className=" flex list-none border rounded-sm p-2 bg-gray-200 w-1/2 h-15 justify-between items-center ">
             <span>{t.textTask}</span>
-            <div>
-                <Button variant="outline" onClick={() => toggleTask(t.taskId)}>
-                    Toggle
-                </Button>
+            <div className="grid grid-cols-2 gap-2">
+                <Checkbox className="bg-white h-5 w-5" onClick={() => toggleTask(t.taskId)}>
+                </Checkbox>
                 <button onClick={() => deleteTask(t.taskId)} className='w-20 h-8 border rounded-sm transform transition duration-300 hover:scale-110'>Delete</button>
             </div>
             </li>

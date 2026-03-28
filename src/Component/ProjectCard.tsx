@@ -6,7 +6,9 @@ import { Checkbox } from "../components/ui/checkBox";
 export function ProjectCard() {
     const [project, setProject] = useState<Project[]>(() =>{
         const storedProjects = localStorage.getItem("project");
+        if (storedProjects) {
         return storedProjects ? JSON.parse(storedProjects) : [];
+        }
     });
 
     useEffect(() => {
