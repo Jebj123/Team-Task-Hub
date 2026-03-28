@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
-import type { Project } from "../types/types"
+import type { Project, Task } from "../types/types"
 import { InputField } from "./Field/InputField";
+import { Checkbox } from "../components/ui/checkBox";
 
 
 export function ProjectCard() {
@@ -11,13 +12,13 @@ export function ProjectCard() {
         }
     });
 
+    
     useEffect(() => {
         localStorage.setItem("project", JSON.stringify(project));
     }, [project]);
-
+    
     const [projectInput, setProjectInput] = useState("");
 
-   
 
     const addProject =  (e) => {
         e.preventDefault();
@@ -33,6 +34,7 @@ export function ProjectCard() {
                 completed: false,
                 extendedTasks: [],
             };
+
         localStorage.setItem("project", JSON.stringify(newProject));
         setProject([...project, newProject]);
         setProjectInput("");
@@ -63,6 +65,13 @@ export function ProjectCard() {
             <a href={`/user/task/${proj.id}`}>
                 <span className="text-shadow-lg">{proj.textProject}</span>
             </a>
+            <Checkbox className="w-5 h-5 border rounded-sm" checked={proj.completed} onCheckedChange={() => {
+                const updatedProjects = project.map((p) => 
+                    p.id === proj.id ? { ...p, completed: !p.completed } : p
+                );
+                setProject(updatedProjects);
+                localStorage.setItem("project", JSON.stringify(updatedProjects));
+            }} />
                 <button onClick={() => deleteProject(proj.id)} className="w-20 border rounded-sm text-red-500 hover:bg-red-300 hover:scale-110">Delete</button>
             </li>
             </div>

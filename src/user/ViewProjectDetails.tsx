@@ -4,7 +4,7 @@ import { ProjectDetailCard } from '../Component/projectDetailCard';
 import { InputField } from '../Component/Field/InputField';
 import { useParams } from 'react-router-dom';
 import { Checkbox } from "../components/ui/checkBox";
-import { set } from 'zod';
+
 
 export const ViewProjectDetails = () => {
     const [task, setTasks] = useState<Task[]>(() =>{
@@ -71,11 +71,10 @@ export const ViewProjectDetails = () => {
         const tasksForSelectedProject = task.filter(
         (task) => task.projectId.toString() === projectId
         );
-
+   
         const completedTasks = tasksForSelectedProject.filter((t) => t.isCompleted).length;
         const totalTasks = tasksForSelectedProject.length;
         let progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
-
 
 
   return (

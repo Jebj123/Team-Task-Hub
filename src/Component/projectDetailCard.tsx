@@ -1,10 +1,7 @@
 import { useState } from "react";
 import type { Project, Task } from "../types/types";
 import { useParams } from "react-router-dom";
-import { Checkbox } from "../components/ui/checkBox";
-import calculateProgress  from "../user/ViewProjectDetails";
-
-   
+  
     export function ProjectDetailCard(){
         const [project, setProject] = useState<Project[]>(() =>{
             const storedProjects = localStorage.getItem("project");
@@ -20,6 +17,7 @@ import calculateProgress  from "../user/ViewProjectDetails";
         return (
             <div >
                 <h1>{projectDetail.textProject}</h1>
+             
                 <div>
                   
                 </div>
