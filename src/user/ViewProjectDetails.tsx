@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import type { Project, Task } from '../types/types';
-import { ProjectDetailCard } from '../Component/projectDetailCard';
+import { ProjectDetailCard } from '../Component/Cards/projectDetailCard';
 import { InputField } from '../Component/Field/InputField';
 import { useParams } from 'react-router-dom';
 import { Checkbox } from "../components/ui/checkBox";
+import { Card } from '../components/ui/card';
 
 
 export const ViewProjectDetails = () => {
@@ -92,14 +93,23 @@ export const ViewProjectDetails = () => {
 
   return (
     <div className="grid max-w-full h-full justify-center items-center pl-1">
-        <div className="flex list-none border rounded-sm p-2 bg-gray-200  h-20 justify-between items-center scale-102">
+        <div className='flex items-center justify-center pb-10'>
+        <Card className="w-60 h-50 items-center justify-center gap-2">
+            <h1 className="text-2xl text-center font-bold underline">Tasks Completed</h1>
+            <p className="text-2xl font-bold">{completedTasks}/{totalTasks}</p>
+            {progress > 0 && (
+                <div className="w-1/2 bg-red-400 rounded-full h-4 mb-4">
+                    <div className="bg-green-400 h-4 rounded-full items-center flex justify-center " style={{ width: `${progress}%` }}>{progress}%</div>
+                </div>
+            )}
+            {progress === 100 && (
+                <h3 className="text-green-500 font-bold ">Good job!</h3>
+            )}
+        </Card>
+    </div>
+        <div className="flex list-none border rounded-sm p-2 bg-gray-50  h-20 justify-between items-center scale-102">
         <ProjectDetailCard/>
     <div className="grid grid-cols-1 items-end">
-        {progress > 0 && (
-            <div className="w-1/2 bg-white rounded-full h-4 mb-4 justify-start items-center flex">
-                <div className="bg-blue-500 h-4 rounded-full items-center flex justify-center" style={{ width: `${progress}%` }}>{progress}%</div>
-            </div>
-        )}
         {completedTasks === totalTasks && totalTasks > 0 ? (
             <h3 className="text-green-500 font-bold w-50 pl-2">Completed</h3>
         ) : (
@@ -114,10 +124,10 @@ export const ViewProjectDetails = () => {
         <button onClick={addTask} type='submit' className='w-30 h-8 border rounded-sm transform transition duration-300 hover:scale-110' >Add Task</button>
         </div>
         <br />
-        <div className="grid grid-cols-1 gap-5 w-auto">
+        <div className="grid grid-cols-1 border rounded-sm w-auto">
         {tasksForSelectedProject.map((t) => (
             <div key={t.taskId}>
-            <li className=" flex list-none border rounded-sm p-2 bg-indigo-50 w-300 h-20 min-w-auto justify-between items-center ">
+            <li className=" flex list-none border  p-2 bg-gray-50 w-300 h-20 min-w-auto justify-between items-center ">
             <span className='text-xl'>{t.textTask}</span>
             <div className="grid grid-cols-2 gap-2">
                 <Checkbox className="bg-white h-5 w-5" onClick={() => toggleTask(t.taskId)} checked={t.isCompleted}>

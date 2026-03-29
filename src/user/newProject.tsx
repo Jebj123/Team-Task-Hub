@@ -1,4 +1,4 @@
-import { ProjectCard } from '../Component/ProjectCard'
+import { ProjectCard } from '../Component/Cards/ProjectCard'
 
 
 

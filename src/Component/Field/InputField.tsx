@@ -11,7 +11,7 @@ export function InputField({ value, placeholder, ...props}: InputFieldProps){
         <Input 
         placeholder={placeholder}
         className="bg-white w-full h-10" 
-        defaultValue={value}
+        value={value}
         onChange={(e) => {
             props.onChange(e);
         }}

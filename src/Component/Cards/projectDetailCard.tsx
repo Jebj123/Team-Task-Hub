@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Project, Task } from "../types/types";
+import type { Project, Task } from "../../types/types";
 import { useParams } from "react-router-dom";
   
     export function ProjectDetailCard(){
@@ -15,8 +15,8 @@ import { useParams } from "react-router-dom";
         }
 
         return (
-            <div>
-                <h1 className="text-5xl">{projectDetail.textProject} :</h1>
+            <div className="flex w-245  ">
+                <h1 className="text-5xl underline font-bold">{projectDetail.textProject} :</h1>
              
                 <div>
                   
