@@ -15,8 +15,8 @@ import { useParams } from "react-router-dom";
         }
 
         return (
-            <div >
-                <h1>{projectDetail.textProject}</h1>
+            <div>
+                <h1 className="text-5xl">{projectDetail.textProject} :</h1>
              
                 <div>
                   

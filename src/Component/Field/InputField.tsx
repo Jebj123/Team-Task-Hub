@@ -10,7 +10,7 @@ export function InputField({ value, placeholder, ...props}: InputFieldProps){
     return (
         <Input 
         placeholder={placeholder}
-        className="bg-white w-full" 
+        className="bg-white w-full h-10" 
         defaultValue={value}
         onChange={(e) => {
             props.onChange(e);
