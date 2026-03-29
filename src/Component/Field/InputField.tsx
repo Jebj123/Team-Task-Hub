@@ -1,4 +1,4 @@
-import { Input } from "../../components/ui/input";
+import { Input } from "../../Shared/components/ui/input";
 
 type InputFieldProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     value?: string;

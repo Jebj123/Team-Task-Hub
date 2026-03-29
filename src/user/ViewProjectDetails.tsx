@@ -3,8 +3,8 @@ import type { Project, Task } from '../types/types';
 import { ProjectDetailCard } from '../Component/Cards/projectDetailCard';
 import { InputField } from '../Component/Field/InputField';
 import { useParams } from 'react-router-dom';
-import { Checkbox } from "../components/ui/checkBox";
-import { Card } from '../components/ui/card';
+import { Checkbox } from "../Shared/components/ui/checkBox";
+import { Card } from '../Shared/components/ui/card';
 
 
 export const ViewProjectDetails = () => {
@@ -92,7 +92,7 @@ export const ViewProjectDetails = () => {
 
 
   return (
-    <div className="grid max-w-full h-full justify-center items-center pl-1">
+    <div className="grid max-w-full h-full justify-center items-center pl-20 pt-7">
         <div className='flex items-center justify-center pb-10'>
         <Card className="w-60 h-50 items-center justify-center gap-2">
             <h1 className="text-2xl text-center font-bold underline">Tasks Completed</h1>
@@ -107,7 +107,7 @@ export const ViewProjectDetails = () => {
             )}
         </Card>
     </div>
-        <div className="flex list-none border rounded-sm p-2 bg-gray-50  h-20 justify-between items-center scale-102">
+        <div className="flex list-none border-4 rounded-sm p-2 bg-gray-50  h-20 justify-between items-center ">
         <ProjectDetailCard/>
     <div className="grid grid-cols-1 items-end">
         {completedTasks === totalTasks && totalTasks > 0 ? (
@@ -124,15 +124,18 @@ export const ViewProjectDetails = () => {
         <button onClick={addTask} type='submit' className='w-30 h-8 border rounded-sm transform transition duration-300 hover:scale-110' >Add Task</button>
         </div>
         <br />
-        <div className="grid grid-cols-1 border rounded-sm w-auto">
+        <div className="grid grid-cols-1 border-2 rounded-sm w-auto">
+        <div className='flex justify-between mr-15'>
+        <h1 className='text-2xl font-bold underline pl-5'>Tasks</h1><h1 className='pl-188 text-2xl font-bold underline'>Status</h1><h1 className='text-2xl font-bold underline'>delete</h1>
+        </div>
         {tasksForSelectedProject.map((t) => (
             <div key={t.taskId}>
-            <li className=" flex list-none border  p-2 bg-gray-50 w-300 h-20 min-w-auto justify-between items-center ">
+            <li className=" flex list-none border  p-2 bg-gray-50 w-full h-20 justify-between items-center hover:font-bold ">
             <span className='text-xl'>{t.textTask}</span>
             <div className="grid grid-cols-2 gap-2">
-                <Checkbox className="bg-white h-5 w-5" onClick={() => toggleTask(t.taskId)} checked={t.isCompleted}>
+                <Checkbox className="bg-white h-5 w-5 text-green-800 border-black hover:scale-105" onClick={() => toggleTask(t.taskId)} checked={t.isCompleted}>
                 </Checkbox>
-                <button onClick={() => deleteTask(t.taskId)} className='w-20 h-8 border rounded-sm transform transition duration-300 hover:scale-110'>Delete</button>
+                <button onClick={() => deleteTask(t.taskId)} className='text-red-500 w-20 h-8 border rounded-sm transform transition duration-300 hover:scale-110 mr-10'>Delete</button>
             </div>
             </li>
             </div>

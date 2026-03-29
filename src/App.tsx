@@ -3,6 +3,7 @@ import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ViewProjectDetails } from "./user/ViewProjectDetails"
 import NewProject from './user/newProject'
+import Home from './Home/Home'
 
 
 
@@ -12,6 +13,7 @@ function App() {
   <BrowserRouter>
     <Layout>
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="/user/project" element={<NewProject />} />
         <Route path="/user/task/:projectId" element={<ViewProjectDetails />} />
       </Routes>

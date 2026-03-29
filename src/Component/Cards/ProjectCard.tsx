@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import type { Project, Task } from "../../types/types"
 import { InputField } from "../Field/InputField";
-import { Checkbox } from "../../components/ui/checkBox";
-import { Card } from "../../components/ui/card";
+import { Checkbox } from "../../Shared/components/ui/checkBox";
+import { Card } from "../../Shared/components/ui/card";
 
 
 export function ProjectCard() {
@@ -66,7 +66,7 @@ export function ProjectCard() {
     const taskProgress = taskLength === 0 ? 0 : Math.round((completedTasks / taskLength) * 100);
 
     return(
-    <div className="grid max-w-full h-full justify-center items-center">
+    <div className="grid w-fullh-full justify-center items-center pl-20 pt-15">
     <div className="grid grid-cols-2 gap-2 items-center justify-center w-full pl-80 pb-10">
         <Card className="w-60 h-50 items-center justify-center gap-2">
             <h1 className="text-2xl text-center font-bold underline">Projects Completed</h1>
@@ -103,24 +103,17 @@ export function ProjectCard() {
         <br />
         <div className="grid grid-cols-1  border rounded-sm">
         <div className="flex justify-between border">
-            <h1 className="text-2xl font-bold underline text-center ">Project Details</h1><h2 className="text-2xl font-bold text-center underline pr-7">Project status</h2><h2 className="text-2xl font-bold text-center pr-8 underline">Delete Project</h2>
+            <h1 className="text-2xl font-bold underline text-center pl-5">Project Details</h1><h2 className="text-2xl font-bold text-center underline pr-15">Project status</h2><h2 className="text-2xl font-bold text-center pr-8 underline">Delete Project</h2>
         </div>
         {project.map((proj) => (
             <div key={proj.id}>
-            <li className="list-none border  p-2 bg-gray-50 h-20 items-center-safe justify-between flex hover:scale-101 ">
+            <li className="list-none border  p-2 bg-gray-50 h-20 items-center-safe justify-between flex hover:scale-101 hover:font-bold">
             <a href={`/user/task/${proj.id}`}>
-                <h2 className="text-shadow-lg text-3xl w-50">{proj.textProject}</h2>
+                <h2 className="text-shadow-lg text-2xl w-50">{proj.textProject}</h2>
             </a>
             <div className="flex items-center gap-2 justify-between w-300">
-            <Checkbox className="w-5 h-5 border rounded-sm"  disabled checked={proj.completed} onCheckedChange={() => {
-                const updatedProjects = project.map((p) => 
-                    p.id === proj.id ? { ...p, completed: !p.completed } : p
-                );
-                setProject(updatedProjects);
-                localStorage.setItem("project", JSON.stringify(updatedProjects));
-            }} />
-            {proj.completed && <h3 className="text-green-500 font-bold w-50">Completed</h3>} {!proj.completed && <h3 className="text-red-500 font-bold w-50">In Progress</h3>}
-                <button onClick={() => deleteProject(proj.id)} className=" border rounded-sm text-red-500 hover:bg-red-300 hover:scale-110 ml-30">Delete</button> 
+            {proj.completed && <h3 className="text-green-500 font-bold w-50 pl-107">Completed</h3>} {!proj.completed && <h3 className="text-red-500 font-bold w-50 pl-107">In Progress</h3>}
+                <button onClick={() => deleteProject(proj.id)} className=" border rounded-sm text-red-500 hover:bg-red-300 hover:scale-110 mr-10">Delete</button> 
             </div>
             </li>
             </div>
