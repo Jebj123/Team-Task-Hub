@@ -71,10 +71,23 @@ export const ViewProjectDetails = () => {
         const tasksForSelectedProject = task.filter(
         (task) => task.projectId.toString() === projectId
         );
-   
+
+        const isProjectCompleted = tasksForSelectedProject.length > 0 && tasksForSelectedProject.every((t) => t.isCompleted === true);
+
+        const filteredProject = project.find((p) => p.id.toString() === projectId);
+
+        useEffect(() => {
+            if (!filteredProject) return;
+            const updatedProjects = project.map((p) =>
+                p.id.toString() === projectId ? { ...p, completed: isProjectCompleted } : p
+            );
+            setProjects(updatedProjects);
+            localStorage.setItem("project", JSON.stringify(updatedProjects));
+        }, [isProjectCompleted, projectId]);
+    
         const completedTasks = tasksForSelectedProject.filter((t) => t.isCompleted).length;
         const totalTasks = tasksForSelectedProject.length;
-        let progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+        const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
 
   return (

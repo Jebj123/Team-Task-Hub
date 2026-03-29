@@ -4,7 +4,7 @@ import { ProjectCard } from '../Component/ProjectCard'
 
 const MyProject = () => {
   return (
-    <div >
+    <div>
         <ProjectCard />
     </div>
 
