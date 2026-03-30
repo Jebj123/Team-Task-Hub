@@ -5,7 +5,7 @@ import logo from "../assets/TrustFall.jpg"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border rounded-sm w-full h-full">
+    <div className=" w-full h-full">
       <header className="">
         <div className="flex mb-6  border-white border-b-4 pb-4pt-5 rounded-lg">
           <div className="flex justify-around bg-red-500 p-5 rounded-lg border w-full">
@@ -23,6 +23,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex">
             <nav className="">
             <Link to="/user/project" className="text-5xl pr-10 underline hover:text-blue-300">My Projects</Link>
+            <h1 className="text-5xl pr-10 underline hover:text-blue-300 pt-10">About</h1>
             </nav>
           </div> 
           </div>
@@ -30,7 +31,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {children}
         </div>
       </main>
-      <footer className="flex justify-center items-end ">
+      <footer className="flex justify-center items-center pl-20">
         <p className="text-sm text-gray-500">© 2024 Team Task Hub. All rights reserved.</p>
       </footer>
     </div>
