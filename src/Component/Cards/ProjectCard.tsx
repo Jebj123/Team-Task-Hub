@@ -103,16 +103,30 @@ export function ProjectCard() {
     const completedTasks = task.filter((t) => t.isCompleted).length;
     const taskProgress = taskLength === 0 ? 0 : Math.round((completedTasks / taskLength) * 100);
 
+    const [filterImportance, setFilterImportance] = useState<string>("");
+
+        const filterbyImportance = (importance: string) => {
+        setFilterImportance(importance);
+        if (importance === "All") {
+            setDisplayedProjects(project);
+            return;
+        }
+        const filteredProjects = project.filter((p) =>
+            p.projectImportance.toLowerCase() === importance.toLowerCase()
+        );
+        setDisplayedProjects(filteredProjects);
+    };
+
     return(
-    <div className="grid w-fullh-full justify-center items-center pl-20 pt-4">
-    <div className="grid grid-col-1 pb-10 w-1/2 ml-234 gap-2">
+    <div className="grid w-full h-full justify-center items-center pl-20 pt-4 pr-58">
+    <div className="grid grid-col-1 pb-10 ml-197">
     <h3 className="text-1xl font-bold ">Search Projects:</h3>
     <div className="grid grid-cols-2 gap-3">
     <InputField placeholder="search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
     <Button className="w-30 h-8 border-  transform transition duration-300 hover:scale-110 mt-1" onClick={() => searchProjects(searchTerm)}>Search</Button>
     </div>
     </div>
-    <div className="grid grid-cols-2 gap-2 items-center justify-center w-full pl-90 pb-10">
+    <div className="grid grid-cols-2 gap-2 items-center justify-center w-full pl-66 pb-10 ">
         <Card className="w-60 h-50 items-center justify-center gap-2">
             <h1 className="text-2xl text-center font-bold underline">Projects Completed</h1>
             <p className="text-2xl font-bold">{completedProjects}/{projectLength}</p>
@@ -139,9 +153,22 @@ export function ProjectCard() {
         </Card>
     </div>
         <h1 className="flex  pb-10 text-5xl underline font-bold items-center justify-center">Project</h1>
-        <div className="grid grid-cols-2 gap-2 pl-100 items-center justify-center w-full">
+        <div className="grid grid-cols-3 gap-2  items-center justify-center w-full">
         <InputField  placeholder='Project Name' value={projectInput} onChange={(e) => {setProjectInput(e.target.value)}} />
         <button onClick={addProject} type='submit' className='gap-0 w-30 h-8 border rounded-sm transform transition duration-300 hover:scale-110' >Add Project</button>
+        <div className="flex justify-end gap-2 pr-20">
+        <h1 className="text-1xl font-bold">Filter by importance:</h1>
+        {(["All", "High", "Medium", "Low"] as const).map((level) => (
+            <Button
+                key={level}
+                variant={filterImportance === level || (level === "All" && !filterImportance) ? "default" : "outline"}
+                onClick={() => filterbyImportance(level)}
+                className="selection:bg-gray-400"
+            >
+                {level}
+            </Button>
+        ))}
+        </div>
         </div>
         <br/>
         <div className="">
@@ -152,7 +179,7 @@ export function ProjectCard() {
         </div>
         {displayedProjects.map((proj) => (
             <div key={proj.id}>
-            <li className="list-none border  p-2 bg-gray-50 h-20 items-center-safe justify-between flex hover:font-bold ">
+            <li className="flex list-none border  p-2 bg-gray-50 h-20 items-center justify-between hover:font-bold ">
             <a href={`/user/task/${proj.id}`}>
                 <h2 className="text-shadow-lg text-2xl w-50">{proj.textProject}</h2>
             </a>

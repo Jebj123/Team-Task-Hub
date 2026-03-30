@@ -36,6 +36,7 @@ export const ViewProjectDetails = () => {
       const [taskInput, setTaskInput] = useState("");
       const [fieldInput, setFieldInput] = useState("");
 
+      const [filterImportance, setFilterImportance] = useState("");
       const[searchTerm, setSearchTerm] = useState("");
       const [displayedTasks, setDisplayedTasks] = useState<Task[]>([]);
 
@@ -129,12 +130,23 @@ export const ViewProjectDetails = () => {
             );
             setDisplayedTasks(filteredTasks);
             setSearchTerm("");
-        };
+        };   
+        const filterbyImportance = (importance: string) => {
+        setFilterImportance(importance);
+        if (importance === "All") {
+            setDisplayedTasks(tasksForSelectedProject);
+            return;
+        }
+        const filteredTasks = tasksForSelectedProject.filter((t) =>
+            t.taskImportance.toLowerCase() === importance.toLowerCase()
+        );
+        setDisplayedTasks(filteredTasks);
+    };
 
 
   return (
-    <div className="grid max-w-full h-full justify-center items-center pl-20 pt-7">
-        <div className="grid grid-col-1 pb-10 w-1/2 ml-218 gap-2">
+    <div className="grid w-full h-full justify-center items-center pl-30 pt-7">
+        <div className="grid grid-col-1 pb-10 w-1/2 ml-200 gap-2">
     <h3 className="text-1xl font-bold ">Search Tasks:</h3>
     <div className="grid grid-cols-2 gap-3">
     <InputField placeholder="search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
@@ -170,6 +182,19 @@ export const ViewProjectDetails = () => {
         <div className='flex gap-10'>
         <InputField placeholder='Task Name' value={taskInput} onChange={(e) => {setTaskInput(e.target.value)}} />
         <button onClick={addTask} type='submit' className='w-30 h-8 border rounded-sm transform transition duration-300 hover:scale-110' >Add Task</button>
+        <div className="flex justify-end gap-2 pr-20">
+        <h1 className="text-1xl font-bold">Filter by importance:</h1>
+        {(["All", "High", "Medium", "Low"] as const).map((level) => (
+            <Button
+                key={level}
+                variant={filterImportance === level || (level === "All" && !filterImportance) ? "default" : "outline"}
+                onClick={() => filterbyImportance(level)}
+                className="selection:bg-gray-400"
+            >
+                {level}
+            </Button>
+        ))}
+        </div>
         </div>
         <br />
         <div className="grid grid-cols-1 border-2 rounded-sm w-auto">
