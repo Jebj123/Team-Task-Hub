@@ -111,11 +111,11 @@ export function ProjectCard() {
 
     return(
     <div className="grid w-full h-full justify-center items-center pl-24 pt-7 pr-58">
-    <div className="grid grid-col-1 pb-10 ml-197 gap-1">
+        <div className="grid grid-cols-1 gap-1 pb-10 md:ml-auto md:w-1/2 pl-34">
     <h3 className="text-1xl font-bold ">Search Projects:</h3>
-    <div className="grid grid-cols-2 gap-3">
+    <div className="flex flex-row gap-3">
     <InputField placeholder="search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
-    <Button className="w-30 h-8 transition-transform duration-300 hover:scale-110 mt-1" onClick={() => searchProjects(searchTerm)}>Search</Button>
+    <Button className=" border-black w-30 h-8 transition-transform duration-300 hover:scale-110 mt-1" onClick={() => searchProjects(searchTerm)}>Search</Button>
     </div>
     </div>
     <div className="grid grid-cols-2 gap-2 items-center justify-center w-full pl-66 pb-10 ">
@@ -158,7 +158,7 @@ export function ProjectCard() {
                 key={level}
                 variant={filterImportance === level || (level === "All" && !filterImportance) ? "default" : "outline"}
                 onClick={() => filterbyImportance(level)}
-                className="selection:bg-gray-400 hover:bg-gray-200 hover:scale-102"
+                className=" hover:bg-gray-200 hover:scale-102"
             >
                 {level}
             </Button>
@@ -177,17 +177,17 @@ export function ProjectCard() {
             const isCompleted = projTasks.length > 0 && projTasks.every((t) => t.isCompleted);
             return (
             <div key={proj.id}>
-            <li className="flex list-none border  p-2 bg-gray-50 h-20 items-center justify-between hover:font-bold ">
+            <li className="flex list-none border bg-gray-50 h-20 items-center justify-between hover:font-bold ">
             <Link to={`/user/task/${proj.id}`}>
-                <h2 className="text-shadow-lg text-2xl w-50">{proj.textProject}</h2>
+                <h2 className="text-shadow-lg text-2xl w-50 pl-2">{proj.textProject}</h2>
             </Link>
             <div className="pl-29">
             <h1 className="text xl capitalize pl-10 w-35 ">{proj.projectImportance}</h1>
             </div>
             <div className="flex items-center gap-2 justify-between w-300">
             {isCompleted
-                ? <h3 className="text-green-500 font-bold w-50 pl-75">Completed</h3>
-                : <h3 className="text-red-500 font-bold w-50 pl-75">In Progress</h3>}
+                ? <h3 className="text-green-500 font-bold w-50 pl-80">Completed</h3>
+                : <h3 className="text-red-500 font-bold w-50 pl-80">In Progress</h3>}
                 <button onClick={() => deleteProject(proj.id)} type="button" className=" border rounded-sm text-red-500 hover:bg-red-300 hover:scale-110 mr-20">Delete</button> 
             </div>
             </li>

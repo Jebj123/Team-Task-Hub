@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main className="flex min-h-[calc(100vh-180px)] w-full pb-10">
         <div className="flex w-85 shrink-0 border-r-4 border-gray-500 pt-20 pl-10">
           <div className="flex w-full">
-            <nav className="">
+            <nav className="flex flex-col gap-10 text-gray-700 text-2xl  pt-35">
             <Link to="/user/project" className="text-5xl pr-10 underline hover:text-blue-300">My Projects</Link>
             <h1 className="text-5xl pr-10 underline hover:text-blue-300 pt-10">About</h1>
             </nav>

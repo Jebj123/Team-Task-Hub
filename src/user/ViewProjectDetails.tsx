@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Task } from '../types/types';
+import type { Project, Task } from '../types/types';
 import { ProjectDetailCard } from '../Component/Cards/projectDetailCard';
 import { InputField } from '../Component/Field/InputField';
 import { useParams } from 'react-router-dom';
@@ -7,29 +7,46 @@ import { Checkbox } from "../Shared/components/ui/checkBox";
 import { Card } from '../Shared/components/ui/card';
 import { Button } from '../Shared/components/ui/button';
 import { SelectField } from '../Component/Field/SelectField';
-import { parseStoredTasks } from '../schema/schema';
+import { parseStoredProjects, parseStoredTasks } from '../schema/schema';
 
 
 export const ViewProjectDetails = () => {
     const [task, setTasks] = useState<Task[]>(() =>{
                 return parseStoredTasks(localStorage.getItem("extendedTasks"));
       });
+    const [project, setProject] = useState<Project[]>(() => {
+                return parseStoredProjects(localStorage.getItem("project"));
+      });
 
       const { projectId } = useParams();
       const selectedProjectId = Number(projectId);
 
       const [taskInput, setTaskInput] = useState("");
-    const [fieldInput, setFieldInput] = useState("");
+      const [fieldInput, setFieldInput] = useState("");
 
       const [filterImportance, setFilterImportance] = useState("");
       const [searchTerm, setSearchTerm] = useState("");
       const [activeSearchTerm, setActiveSearchTerm] = useState("");
       const [sortOrder, setSortOrder] = useState<"none" | "high-to-low">("none");
 
-      // Persist tasks to localStorage whenever they change
+    
       useEffect(() => {
           localStorage.setItem("extendedTasks", JSON.stringify(task));
       }, [task]);
+
+      useEffect(() => {
+          localStorage.setItem("project", JSON.stringify(project));
+      }, [project]);
+
+      const syncSelectedProjectTasks = (allTasks: Task[]) => {
+          setProject((prev) =>
+              prev.map((p) =>
+                  p.id === selectedProjectId
+                      ? { ...p, extendedTasks: allTasks.filter((t) => t.projectId === selectedProjectId) }
+                      : p
+              )
+          );
+      };
 
       const addTask = (inputValue: string, importance: string) => {
           const trimmedTaskInput = inputValue.trim();
@@ -49,7 +66,11 @@ export const ViewProjectDetails = () => {
               taskImportance: selectedImportance,
           };
 
-          setTasks((prev) => [...prev, newTask]);
+          setTasks((prev) => {
+              const nextTasks = [...prev, newTask];
+              syncSelectedProjectTasks(nextTasks);
+              return nextTasks;
+          });
           setTaskInput("");
           setFieldInput("");
           setSearchTerm("");
@@ -63,14 +84,20 @@ export const ViewProjectDetails = () => {
 
       // eyða verkefni
       const deleteTask = (taskId: number) => {
-          setTasks((prev) => prev.filter((t) => t.taskId !== taskId));
+          setTasks((prev) => {
+              const nextTasks = prev.filter((t) => t.taskId !== taskId);
+              syncSelectedProjectTasks(nextTasks);
+              return nextTasks;
+          });
       };
   
       //toggle verkefni
       const toggleTask = (taskId: number) => {
-          setTasks((prev) =>
-              prev.map((t) => t.taskId === taskId ? { ...t, isCompleted: !t.isCompleted } : t)
-          );
+          setTasks((prev) => {
+              const nextTasks = prev.map((t) => t.taskId === taskId ? { ...t, isCompleted: !t.isCompleted } : t);
+              syncSelectedProjectTasks(nextTasks);
+              return nextTasks;
+          });
       };
 
         const tasksForSelectedProject = task.filter(
@@ -110,9 +137,9 @@ export const ViewProjectDetails = () => {
 
     return (
         <div className="w-full max-w-6xl pt-7 ml-25 ">
-                <div className="grid grid-cols-1 gap-1 pb-10 md:ml-auto md:w-1/2">
-    <h3 className="text-1xl font-bold ml-52 ">Search Tasks:</h3>
-    <div className="grid grid-cols-2 gap-3 ml-52">
+            <div className="grid grid-cols-1 gap-1 pb-10 md:ml-auto md:w-1/2 pl-34">
+    <h3 className="text-1xl font-bold">Search Tasks:</h3>
+    <div className="flex gap-3 w-full">
     <InputField placeholder="search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
     <Button className="w-30 h-8 border border-black/20 transition-transform duration-300 hover:scale-110 mt-1" onClick={() => searchTasks(searchTerm)}>Search</Button>
     </div>
@@ -155,7 +182,7 @@ export const ViewProjectDetails = () => {
                 key={level}
                 variant={filterImportance === level || (level === "All" && !filterImportance) ? "default" : "outline"}
                 onClick={() => filterbyImportance(level)}
-                className="selection:bg-gray-400"
+                className=" hover:bg-gray-200 hover:scale-102"
             >
                 {level}
             </Button>
@@ -171,7 +198,7 @@ export const ViewProjectDetails = () => {
             <div key={t.taskId}>
             <li className="grid list-none grid-cols-[minmax(0,1.4fr)_minmax(120px,.6fr)_minmax(120px,.6fr)_auto] items-center gap-4 border bg-gray-50 p-4 hover:font-bold">
             <span className='min-w-0 text-xl'>{t.textTask}</span>
-            <span className='text-xl capitalize pl-10'>{t.taskImportance}</span>
+            <span className='text-xl capitalize pl-5'>{t.taskImportance}</span>
             <div className='pl-7'>
                 <Checkbox className="bg-white h-5 w-5 text-green-800 border-black hover:scale-105" onClick={() => toggleTask(t.taskId)} checked={t.isCompleted}>
                 </Checkbox>
