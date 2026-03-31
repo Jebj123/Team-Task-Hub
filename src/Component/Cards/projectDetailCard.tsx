@@ -1,11 +1,11 @@
 import { useState } from "react";
-import type { Project, Task } from "../../types/types";
+import type { Project } from "../../types/types";
 import { useParams } from "react-router-dom";
+import { parseStoredProjects } from "../../schema/schema";
   
     export function ProjectDetailCard(){
-        const [project, setProject] = useState<Project[]>(() =>{
-            const storedProjects = localStorage.getItem("project");
-            return storedProjects ? JSON.parse(storedProjects) : [];
+        const [project] = useState<Project[]>(() =>{
+            return parseStoredProjects(localStorage.getItem("project"));
         });
         const { projectId } = useParams();
 

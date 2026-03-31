@@ -1,7 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../../Shared/components/ui/select";
 
-import React from 'react'
-
 type SelectFieldProps = {
     value?: string;
     onChange: (value: string) => void;

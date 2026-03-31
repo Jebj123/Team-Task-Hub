@@ -1,6 +1,6 @@
 import { Input } from "../../Shared/components/ui/input";
 
-type InputFieldProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+type InputFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
     value?: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     placeholder: string;

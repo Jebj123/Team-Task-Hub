@@ -1,156 +1,120 @@
-import React, { useEffect, useState } from 'react'
-import type { Project, Task } from '../types/types';
+import { useEffect, useState } from 'react'
+import type { Task } from '../types/types';
 import { ProjectDetailCard } from '../Component/Cards/projectDetailCard';
 import { InputField } from '../Component/Field/InputField';
 import { useParams } from 'react-router-dom';
 import { Checkbox } from "../Shared/components/ui/checkBox";
 import { Card } from '../Shared/components/ui/card';
 import { Button } from '../Shared/components/ui/button';
-import { set } from 'zod';
 import { SelectField } from '../Component/Field/SelectField';
+import { parseStoredTasks } from '../schema/schema';
 
 
 export const ViewProjectDetails = () => {
     const [task, setTasks] = useState<Task[]>(() =>{
-        const storedTasks = localStorage.getItem("extendedTasks");
-        return storedTasks ? JSON.parse(storedTasks) : [];
+                return parseStoredTasks(localStorage.getItem("extendedTasks"));
       });
-     
+
+      const { projectId } = useParams();
+      const selectedProjectId = Number(projectId);
+
+      const [taskInput, setTaskInput] = useState("");
+    const [fieldInput, setFieldInput] = useState("");
+
+      const [filterImportance, setFilterImportance] = useState("");
+      const [searchTerm, setSearchTerm] = useState("");
+      const [activeSearchTerm, setActiveSearchTerm] = useState("");
+      const [sortOrder, setSortOrder] = useState<"none" | "high-to-low">("none");
+
+      // Persist tasks to localStorage whenever they change
       useEffect(() => {
           localStorage.setItem("extendedTasks", JSON.stringify(task));
       }, [task]);
-      
-      const [project, setProjects] = useState<Project[]>(() =>{
-              const storedProjects = localStorage.getItem("project");
-              if (storedProjects) {
-              return storedProjects ? JSON.parse(storedProjects) : [];
-              }
-          });
-      
-          useEffect(() => {
-              localStorage.setItem("project", JSON.stringify(project));
-          }, [project]);
 
-      const { projectId } = useParams();
+      const addTask = (inputValue: string, importance: string) => {
+          const trimmedTaskInput = inputValue.trim();
 
-      const [taskInput, setTaskInput] = useState("");
-      const [fieldInput, setFieldInput] = useState("");
-
-      const [filterImportance, setFilterImportance] = useState("");
-      const[searchTerm, setSearchTerm] = useState("");
-      const [displayedTasks, setDisplayedTasks] = useState<Task[]>([]);
-
-      useEffect(() => {
-          setDisplayedTasks(tasksForSelectedProject);
-      }, [task]);
-     
-  
-      const addTask =  (e) => {
-          e.preventDefault();
-  
-          if (!taskInput || taskInput === null) {
-                window.alert("Please enter a task.");
+          if (!trimmedTaskInput) {
+              window.alert("Please enter a task.");
+              return;
           }
-          if (taskInput) {
-              const newTask = {
-                  taskId: Date.now(),
-                  textTask: taskInput,
-                  projectId : projectId,
-                  isCompleted: false,
-                  taskImportance: fieldInput,
-                  extendedTasks: [taskInput],
-              };
-          localStorage.setItem("extendedTasks", JSON.stringify([...task, newTask]));
-          setTasks([...task, newTask]);
+
+          const selectedImportance = importance || "low";
+
+          const newTask = {
+              taskId: Date.now(),
+              textTask: trimmedTaskInput,
+              projectId: selectedProjectId,
+              isCompleted: false,
+              taskImportance: selectedImportance,
+          };
+
+          setTasks((prev) => [...prev, newTask]);
           setTaskInput("");
-          }
+          setFieldInput("");
+          setSearchTerm("");
+          setActiveSearchTerm("");
+          setFilterImportance("");
+          setSortOrder("none");
       }
       const sortHighToLow = () => {
-        const importanceOrder: Record<"low" | "medium" | "high", number> = {
-            low: 1,
-            medium: 2,
-            high: 3,
-        };
-
-        const getImportanceRank = (importance: string) =>
-            importanceOrder[importance as keyof typeof importanceOrder] ?? 0;
-
-        const sortedTasks = [...tasksForSelectedProject].sort(
-            (a, b) => getImportanceRank(b.taskImportance) - getImportanceRank(a.taskImportance)
-        );
-
-        setDisplayedTasks(sortedTasks);
-    };
+          setSortOrder("high-to-low");
+      };
 
       // eyða verkefni
       const deleteTask = (taskId: number) => {
-          const updatedTasks = task.filter((t) => t.taskId !== taskId);
-          setTasks(updatedTasks);
-          localStorage.setItem("extendedTasks", JSON.stringify(updatedTasks));
+          setTasks((prev) => prev.filter((t) => t.taskId !== taskId));
       };
   
       //toggle verkefni
       const toggleTask = (taskId: number) => {
-          const updatedTasks = task.map((t) => 
-              t.taskId === taskId ? { ...t, isCompleted: !t.isCompleted } : t
+          setTasks((prev) =>
+              prev.map((t) => t.taskId === taskId ? { ...t, isCompleted: !t.isCompleted } : t)
           );
-          setTasks(updatedTasks);
-          localStorage.setItem("extendedTasks", JSON.stringify(updatedTasks));
       };
 
         const tasksForSelectedProject = task.filter(
-        (task) => task.projectId.toString() === projectId
+        (task) => task.projectId === selectedProjectId
         );
-
-        const isProjectCompleted = tasksForSelectedProject.length > 0 && tasksForSelectedProject.every((t) => t.isCompleted === true);
-
-        const filteredProject = project.find((p) => p.id.toString() === projectId);
-
-        useEffect(() => {
-            if (!filteredProject) return;
-            const updatedProjects = project.map((p) =>
-                p.id.toString() === projectId ? { ...p, completed: isProjectCompleted } : p
-            );
-            setProjects(updatedProjects);
-            localStorage.setItem("project", JSON.stringify(updatedProjects));
-        }, [isProjectCompleted, projectId]);
     
         const completedTasks = tasksForSelectedProject.filter((t) => t.isCompleted).length;
         const totalTasks = tasksForSelectedProject.length;
         const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
         const searchTasks = (textTask: string) => {
-            if (!textTask.trim()) {
-                setDisplayedTasks(tasksForSelectedProject);
-                return;
-            }
-            const filteredTasks = task.filter((t) =>
-                t.textTask.toLowerCase().includes(textTask.toLowerCase()) &&
-                t.projectId.toString() === projectId
-            );
-            setDisplayedTasks(filteredTasks);
+            setActiveSearchTerm(textTask.trim());
             setSearchTerm("");
         };   
         const filterbyImportance = (importance: string) => {
-        setFilterImportance(importance);
-        if (importance === "All") {
-            setDisplayedTasks(tasksForSelectedProject);
-            return;
+            setFilterImportance(importance);
+        };
+
+        const importanceOrder: Record<string, number> = { low: 1, medium: 2, high: 3 };
+        let displayedTasks = tasksForSelectedProject;
+
+        if (activeSearchTerm) {
+            displayedTasks = displayedTasks.filter((t) =>
+                t.textTask.toLowerCase().includes(activeSearchTerm.toLowerCase())
+            );
         }
-        const filteredTasks = tasksForSelectedProject.filter((t) =>
-            t.taskImportance.toLowerCase() === importance.toLowerCase()
-        );
-        setDisplayedTasks(filteredTasks);
-    };
+        if (filterImportance && filterImportance !== "All") {
+            displayedTasks = displayedTasks.filter((t) =>
+                t.taskImportance.toLowerCase() === filterImportance.toLowerCase()
+            );
+        }
+        if (sortOrder === "high-to-low") {
+            displayedTasks = [...displayedTasks].sort(
+                (a, b) => (importanceOrder[b.taskImportance] ?? 0) - (importanceOrder[a.taskImportance] ?? 0)
+            );
+        }
 
-
-  return (
-    <div className="grid w-full h-full justify-center items-center pl-30 pt-7">
-        <div className="grid grid-col-1 pb-10 w-1/2 ml-200 gap-2">
-    <h3 className="text-1xl font-bold ">Search Tasks:</h3>
-    <div className="grid grid-cols-2 gap-3">
+    return (
+        <div className="w-full max-w-6xl pt-7 ml-25 ">
+                <div className="grid grid-cols-1 gap-1 pb-10 md:ml-auto md:w-1/2">
+    <h3 className="text-1xl font-bold ml-52 ">Search Tasks:</h3>
+    <div className="grid grid-cols-2 gap-3 ml-52">
     <InputField placeholder="search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-    <Button className="w-30 h-8 border-  transform transition duration-300 hover:scale-110 mt-1" onClick={() => searchTasks(searchTerm)}>Search</Button>
+    <Button className="w-30 h-8 border border-black/20 transition-transform duration-300 hover:scale-110 mt-1" onClick={() => searchTasks(searchTerm)}>Search</Button>
     </div>
     </div>
         <div className='flex items-center justify-center pb-10'>
@@ -179,10 +143,12 @@ export const ViewProjectDetails = () => {
         </div>
         <div className="pt-10">
         </div>
-        <div className='flex gap-10'>
+        <div className='flex flex-wrap items-center gap-4'>
+        <h1 className="text-1xl font-bold">Add Task:</h1>
         <InputField placeholder='Task Name' value={taskInput} onChange={(e) => {setTaskInput(e.target.value)}} />
-        <button onClick={addTask} type='submit' className='w-30 h-8 border rounded-sm transform transition duration-300 hover:scale-110' >Add Task</button>
-        <div className="flex justify-end gap-2 pr-20">
+        <SelectField placeholder="Importance" value={fieldInput} onChange={setFieldInput} />
+        <Button onClick={() => addTask(taskInput, fieldInput)} type='button' className='w-30 h-8 border border-black transition-transform duration-300 hover:scale-110'>Add Task</Button>
+        <div className="flex flex-wrap items-center gap-2 md:ml-auto">
         <h1 className="text-1xl font-bold">Filter by importance:</h1>
         {(["All", "High", "Medium", "Low"] as const).map((level) => (
             <Button
@@ -197,28 +163,20 @@ export const ViewProjectDetails = () => {
         </div>
         </div>
         <br />
-        <div className="grid grid-cols-1 border-2 rounded-sm w-auto">
-        <div className='flex justify-between mr-15'>
-        <h1 className='text-2xl font-bold underline pl-5'>Tasks</h1><h1 className='text-2xl font-bold underline pl-90' onClick={sortHighToLow}>Importance</h1><h1 className='text-2xl font-bold underline pl-50'>Status</h1><h1 className='text-2xl font-bold underline'>delete</h1>
+        <div className="grid grid-cols-1 rounded-sm border-2 w-full">
+        <div className='grid grid-cols-[minmax(0,1.4fr)_minmax(120px,.6fr)_minmax(120px,.6fr)_auto] items-center gap-4 border px-5 py-3 pr-15'>
+        <h1 className='text-2xl font-bold underline'>Tasks</h1><h1 className='text-2xl font-bold underline cursor-pointer' onClick={sortHighToLow}>Importance</h1><h1 className='text-2xl font-bold underline'>Status</h1><h1 className='text-2xl font-bold underline'>Delete</h1>
         </div>
         {displayedTasks.map((t) => (
             <div key={t.taskId}>
-            <li className=" flex list-none border  p-2 bg-gray-50 w-full h-20 justify-between items-center hover:font-bold ">
-            <span className='text-xl w-50'>{t.textTask}</span>
-            <div>
-            <SelectField placeholder="Select Importance" value={t.taskImportance} onChange={(value) => {
-                            const updatedTasks = task.map((taskItem) => {
-                                if (taskItem.taskId === t.taskId) {
-                                    return { ...taskItem, taskImportance: value };
-                                }
-                                return taskItem;
-                            });
-                            setTasks(updatedTasks);
-                        }} />
-                        </div>
-            <div className="grid grid-cols-2 gap-2">
+            <li className="grid list-none grid-cols-[minmax(0,1.4fr)_minmax(120px,.6fr)_minmax(120px,.6fr)_auto] items-center gap-4 border bg-gray-50 p-4 hover:font-bold">
+            <span className='min-w-0 text-xl'>{t.textTask}</span>
+            <span className='text-xl capitalize pl-10'>{t.taskImportance}</span>
+            <div className='pl-7'>
                 <Checkbox className="bg-white h-5 w-5 text-green-800 border-black hover:scale-105" onClick={() => toggleTask(t.taskId)} checked={t.isCompleted}>
                 </Checkbox>
+            </div>
+            <div >
                 <button onClick={() => deleteTask(t.taskId)} className='text-red-500 w-20 h-8 border rounded-sm transform transition duration-300 hover:scale-110 mr-10'>Delete</button>
             </div>
             </li>

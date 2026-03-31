@@ -1,4 +1,3 @@
-import React from 'react'
 import Handshake  from "../assets/Handshake.jpg"
 
 const Home = () => {
