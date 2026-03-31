@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Project, Task } from '../types/types';
+import type { Project } from '../types/types';
 import { ProjectDetailCard } from '../Component/Cards/projectDetailCard';
 import { InputField } from '../Component/Field/InputField';
 import { useParams } from 'react-router-dom';
@@ -7,13 +7,10 @@ import { Checkbox } from "../Shared/components/ui/checkBox";
 import { Card } from '../Shared/components/ui/card';
 import { Button } from '../Shared/components/ui/button';
 import { SelectField } from '../Component/Field/SelectField';
-import { parseStoredProjects, parseStoredTasks } from '../schema/schema';
+import { parseStoredProjects } from '../schema/schema';
 
 
 export const ViewProjectDetails = () => {
-    const [task, setTasks] = useState<Task[]>(() =>{
-                return parseStoredTasks(localStorage.getItem("extendedTasks"));
-      });
     const [project, setProject] = useState<Project[]>(() => {
                 return parseStoredProjects(localStorage.getItem("project"));
       });
@@ -29,24 +26,9 @@ export const ViewProjectDetails = () => {
       const [activeSearchTerm, setActiveSearchTerm] = useState("");
       const [sortOrder, setSortOrder] = useState<"none" | "high-to-low">("none");
 
-    
-      useEffect(() => {
-          localStorage.setItem("extendedTasks", JSON.stringify(task));
-      }, [task]);
-
       useEffect(() => {
           localStorage.setItem("project", JSON.stringify(project));
       }, [project]);
-
-      const syncSelectedProjectTasks = (allTasks: Task[]) => {
-          setProject((prev) =>
-              prev.map((p) =>
-                  p.id === selectedProjectId
-                      ? { ...p, extendedTasks: allTasks.filter((t) => t.projectId === selectedProjectId) }
-                      : p
-              )
-          );
-      };
 
       const addTask = (inputValue: string, importance: string) => {
           const trimmedTaskInput = inputValue.trim();
@@ -66,11 +48,13 @@ export const ViewProjectDetails = () => {
               taskImportance: selectedImportance,
           };
 
-          setTasks((prev) => {
-              const nextTasks = [...prev, newTask];
-              syncSelectedProjectTasks(nextTasks);
-              return nextTasks;
-          });
+          setProject((prev) =>
+              prev.map((p) =>
+                  p.id === selectedProjectId
+                      ? { ...p, extendedTasks: [...p.extendedTasks, newTask] }
+                      : p
+              )
+          );
           setTaskInput("");
           setFieldInput("");
           setSearchTerm("");
@@ -84,25 +68,33 @@ export const ViewProjectDetails = () => {
 
       // eyða verkefni
       const deleteTask = (taskId: number) => {
-          setTasks((prev) => {
-              const nextTasks = prev.filter((t) => t.taskId !== taskId);
-              syncSelectedProjectTasks(nextTasks);
-              return nextTasks;
-          });
+          setProject((prev) =>
+              prev.map((p) =>
+                  p.id === selectedProjectId
+                      ? { ...p, extendedTasks: p.extendedTasks.filter((t) => t.taskId !== taskId) }
+                      : p
+              )
+          );
       };
   
       //toggle verkefni
       const toggleTask = (taskId: number) => {
-          setTasks((prev) => {
-              const nextTasks = prev.map((t) => t.taskId === taskId ? { ...t, isCompleted: !t.isCompleted } : t);
-              syncSelectedProjectTasks(nextTasks);
-              return nextTasks;
-          });
+          setProject((prev) =>
+              prev.map((p) =>
+                  p.id === selectedProjectId
+                      ? {
+                          ...p,
+                          extendedTasks: p.extendedTasks.map((t) =>
+                              t.taskId === taskId ? { ...t, isCompleted: !t.isCompleted } : t
+                          ),
+                        }
+                      : p
+              )
+          );
       };
 
-        const tasksForSelectedProject = task.filter(
-        (task) => task.projectId === selectedProjectId
-        );
+        const selectedProject = project.find((p) => p.id === selectedProjectId);
+        const tasksForSelectedProject = selectedProject?.extendedTasks ?? [];
     
         const completedTasks = tasksForSelectedProject.filter((t) => t.isCompleted).length;
         const totalTasks = tasksForSelectedProject.length;

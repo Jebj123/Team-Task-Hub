@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { Project, Task } from "../../types/types"
+import type { Project } from "../../types/types"
 import { InputField } from "../Field/InputField";
 import { Card } from "../../Shared/components/ui/card";
 import { Button } from "../../Shared/components/ui/button";
 import { SelectField } from "../Field/SelectField";
-import { parseStoredProjects, parseStoredTasks } from "../../schema/schema";
+import { parseStoredProjects } from "../../schema/schema";
 
 
 
 export function ProjectCard() {
     const [project, setProject] = useState<Project[]>(() =>{
         return parseStoredProjects(localStorage.getItem("project"));
-    });
-    const [task] = useState<Task[]>(() =>{
-        return parseStoredTasks(localStorage.getItem("extendedTasks"));
     });
 
     useEffect(() => {
@@ -77,6 +74,7 @@ export function ProjectCard() {
     };
 
     const importanceOrder: Record<string, number> = { low: 1, medium: 2, high: 3 };
+    const task = project.flatMap((proj) => proj.extendedTasks);
 
     const projectLength = project.length;
     const completedProjects = project.filter((proj) => {
