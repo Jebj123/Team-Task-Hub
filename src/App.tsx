@@ -1,8 +1,8 @@
 import Layout from './Layout/Layout'
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { ViewProjectDetails } from "./user/ViewProjectDetails"
-import NewProject from './user/newProject'
+import { ViewProjectDetails } from "./Pages/ProjectTasksPage"
+import NewProject from './Pages/ProjectRoute'
 import Home from './Home/Home'
 
 

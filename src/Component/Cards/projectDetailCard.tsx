@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type { Project } from "../../types/types";
+import type { Project } from "../../Shared/types/types";
 import { useParams } from "react-router-dom";
-import { parseStoredProjects } from "../../schema/schema";
+import { parseStoredProjects } from "../../Shared/schema/schema";
   
     export function ProjectDetailCard(){
         const [project] = useState<Project[]>(() =>{

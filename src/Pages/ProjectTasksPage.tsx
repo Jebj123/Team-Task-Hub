@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Project } from '../types/types';
+import type { Project } from '../Shared/types/types';
 import { ProjectDetailCard } from '../Component/Cards/projectDetailCard';
 import { InputField } from '../Component/Field/InputField';
 import { useParams } from 'react-router-dom';
@@ -7,7 +7,9 @@ import { Checkbox } from "../Shared/components/ui/checkBox";
 import { Card } from '../Shared/components/ui/card';
 import { Button } from '../Shared/components/ui/button';
 import { SelectField } from '../Component/Field/SelectField';
-import { parseStoredProjects } from '../schema/schema';
+import { parseStoredProjects } from '../Shared/schema/schema';
+import upAndDownArrow from "../assets/UpandDown.png"
+
 
 
 export const ViewProjectDetails = () => {
@@ -24,28 +26,34 @@ export const ViewProjectDetails = () => {
       const [filterImportance, setFilterImportance] = useState("");
       const [searchTerm, setSearchTerm] = useState("");
       const [activeSearchTerm, setActiveSearchTerm] = useState("");
-      const [sortOrder, setSortOrder] = useState<"none" | "high-to-low">("none");
+      const [sortOrder, setSortOrder] = useState<"none" | "high-to-low" | "low-to-high">("none");
+      const [sortLetterOrder, setSortLetterOrder] = useState<"none" | "a-to-z" | "z-to-a">("none");
+      const [sortStatusOrder, setSortStatusOrder] = useState<"none" | "completed-to-incomplete" | "incomplete-to-completed">("none");
 
+      
       useEffect(() => {
           localStorage.setItem("project", JSON.stringify(project));
       }, [project]);
 
       const addTask = (inputValue: string, importance: string) => {
           const trimmedTaskInput = inputValue.trim();
+          const trimmedImportance = importance.trim();
 
           if (!trimmedTaskInput) {
               window.alert("Please enter a task.");
               return;
           }
-
-          const selectedImportance = importance || "low";
+          if (!trimmedImportance) {
+              window.alert("Please select an importance level.");
+              return;
+          }
 
           const newTask = {
               taskId: Date.now(),
               textTask: trimmedTaskInput,
               projectId: selectedProjectId,
               isCompleted: false,
-              taskImportance: selectedImportance,
+              taskImportance: trimmedImportance,
           };
 
           setProject((prev) =>
@@ -60,10 +68,23 @@ export const ViewProjectDetails = () => {
           setSearchTerm("");
           setActiveSearchTerm("");
           setFilterImportance("");
-          setSortOrder("none");
       }
       const sortHighToLow = () => {
-          setSortOrder("high-to-low");
+          setSortLetterOrder("none");
+          setSortStatusOrder("none");
+          setSortOrder((prev) => (prev === "high-to-low" ? "low-to-high" : "high-to-low"));
+      };
+
+      const sortAToZ = () => {
+          setSortOrder("none");
+          setSortStatusOrder("none");
+          setSortLetterOrder((prev) => (prev === "a-to-z" ? "z-to-a" : "a-to-z"));
+      }
+
+      const sortCompletedStatus = () => {
+          setSortOrder("none");
+          setSortLetterOrder("none");
+            setSortStatusOrder((prev) => (prev === "completed-to-incomplete" ? "incomplete-to-completed" : "completed-to-incomplete"));
       };
 
       // eyða verkefni
@@ -126,10 +147,28 @@ export const ViewProjectDetails = () => {
                 (a, b) => (importanceOrder[b.taskImportance] ?? 0) - (importanceOrder[a.taskImportance] ?? 0)
             );
         }
+        if (sortOrder === "low-to-high") {
+            displayedTasks = [...displayedTasks].sort(
+                (a, b) => (importanceOrder[a.taskImportance] ?? 0) - (importanceOrder[b.taskImportance] ?? 0)
+            );
+        }
+        if(sortLetterOrder === "a-to-z") {
+            displayedTasks = [...displayedTasks].sort((a, b) => a.textTask.localeCompare(b.textTask));
+        }
+        if(sortLetterOrder === "z-to-a") {
+            displayedTasks = [...displayedTasks].sort((a, b) => b.textTask.localeCompare(a.textTask));
+        }
+        if (sortStatusOrder === "completed-to-incomplete") {
+            displayedTasks = [...displayedTasks].sort((a, b) => Number(b.isCompleted) - Number(a.isCompleted));
+        }
+        if (sortStatusOrder === "incomplete-to-completed") {
+            displayedTasks = [...displayedTasks].sort((a, b) => Number(a.isCompleted) - Number(b.isCompleted));
+        }
+
 
     return (
-        <div className="w-full max-w-6xl pt-7 ml-25 ">
-            <div className="grid grid-cols-1 gap-1 pb-10 md:ml-auto md:w-1/2 pl-34">
+        <div className="w-full max-w-6xl pt-7 ml-auto mr-auto">
+            <div className="grid grid-cols-1 gap-1 pb-10 md:ml-auto md:w-1/2 pl-29">
     <h3 className="text-1xl font-bold">Search Tasks:</h3>
     <div className="flex gap-3 w-full">
     <InputField placeholder="search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
@@ -182,24 +221,37 @@ export const ViewProjectDetails = () => {
         </div>
         </div>
         <br />
-        <div className="grid grid-cols-1 rounded-sm border-2 w-full">
-        <div className='grid grid-cols-[minmax(0,1.4fr)_minmax(120px,.6fr)_minmax(120px,.6fr)_auto] items-center gap-4 border px-5 py-3 pr-15'>
-        <h1 className='text-2xl font-bold underline'>Tasks</h1><h1 className='text-2xl font-bold underline cursor-pointer' onClick={sortHighToLow}>Importance</h1><h1 className='text-2xl font-bold underline'>Status</h1><h1 className='text-2xl font-bold underline'>Delete</h1>
+        <div className="grid grid-cols-1 rounded-sm border-2 w-full overflow-hidden">
+        <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(120px,.6fr)_minmax(120px,.6fr)_minmax(140px,.5fr)] items-stretch gap-0 border-b bg-gray-100">
+            <div className="px-4 py-3 border-r flex items-center">
+                <h1 className='text-2xl font-bold underline cursor-pointer' onClick={sortAToZ}>Tasks<img src={upAndDownArrow} alt="Sort Arrow" className="w-4 inline-block ml-2" /></h1>
+            </div>
+            <div className="px-4 py-3 border-r flex items-center">
+                <h1 className='text-2xl font-bold underline cursor-pointer' onClick={sortHighToLow}>Importance<img src={upAndDownArrow} alt="Sort Arrow" className="w-4 inline-block ml-2" /></h1>
+            </div>
+            <div className="px-4 py-3 border-r flex items-center">
+                <h1 className='text-2xl font-bold underline cursor-pointer' onClick={sortCompletedStatus}>Status<img src={upAndDownArrow} alt="Sort Arrow" className="w-4 inline-block ml-2" /></h1>
+            </div>
+            <div className="px-4 py-3 flex items-center">
+                <h1 className='text-2xl font-bold underline'>Delete</h1>
+            </div>
         </div>
         {displayedTasks.map((t) => (
-            <div key={t.taskId}>
-            <li className="grid list-none grid-cols-[minmax(0,1.4fr)_minmax(120px,.6fr)_minmax(120px,.6fr)_auto] items-center gap-4 border bg-gray-50 p-4 hover:font-bold">
-            <span className='min-w-0 text-xl'>{t.textTask}</span>
-            <span className='text-xl capitalize pl-5'>{t.taskImportance}</span>
-            <div className='pl-7'>
+            <li key={t.taskId} className="grid list-none grid-cols-[minmax(0,1.4fr)_minmax(120px,.6fr)_minmax(120px,.6fr)_minmax(140px,.5fr)] items-stretch gap-0 border-b bg-gray-50 hover:font-bold">
+            <div className="px-4 py-3 border-r flex items-center">
+                <span className='min-w-0 text-xl'>{t.textTask}</span>
+            </div>
+            <div className="px-4 py-3 border-r flex items-center">
+                <span className='text-xl capitalize'>{t.taskImportance}</span>
+            </div>
+            <div className="px-4 py-3 border-r flex items-center">
                 <Checkbox className="bg-white h-5 w-5 text-green-800 border-black hover:scale-105" onClick={() => toggleTask(t.taskId)} checked={t.isCompleted}>
                 </Checkbox>
             </div>
-            <div >
-                <button onClick={() => deleteTask(t.taskId)} className='text-red-500 w-20 h-8 border rounded-sm transform transition duration-300 hover:scale-110 mr-10'>Delete</button>
+            <div className="px-4 py-3 flex items-center">
+                <button onClick={() => deleteTask(t.taskId)} className='text-red-500 w-20 h-8 border rounded-sm transform transition duration-300 hover:scale-110'>Delete</button>
             </div>
             </li>
-            </div>
         ))}
         </div>
     </div>

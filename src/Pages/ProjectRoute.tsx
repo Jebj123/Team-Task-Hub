@@ -1,4 +1,4 @@
-import { ProjectCard } from '../Component/Cards/ProjectCard'
+import { ProjectCard } from './ProjectPage'
 
 
 
