@@ -23,7 +23,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex w-full">
             <nav className="flex flex-col gap-10 text-gray-700 text-2xl  pt-35">
             <Link to="/user/project" className="text-5xl pr-10 underline hover:text-blue-300">My Projects</Link>
-            <h1 className="text-5xl pr-10 underline hover:text-blue-300 pt-10">About</h1>
             </nav>
           </div> 
         </div>
