@@ -1,23 +1,37 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { Project } from "../Shared/types/types"
 import { InputField } from "../Component/Field/InputField";
 import { Card } from "../Shared/components/ui/card";
 import { Button } from "../Shared/components/ui/button";
 import { SelectField } from "../Component/Field/SelectField";
 import { parseStoredProjects } from "../Shared/schema/schema";
+import { useProjectAndTaskManage } from "../Shared/components/projectsandTaskManager/projectAndTaskManage";
 import upAndDownArrow from "../../src/assets/UpandDown.png";
 
 
 
 export function ProjectCard() {
-    const [project, setProject] = useState<Project[]>(() =>{
-        return parseStoredProjects(localStorage.getItem("project"));
-    });
+    const project = useProjectAndTaskManage((state) => state.projects);
+    const tasks = useProjectAndTaskManage((state) => state.tasks);
+    const initializeProjects = useProjectAndTaskManage((state) => state.initializeProjects);
+    const initializeTasks = useProjectAndTaskManage((state) => state.initializeTasks);
+    const addProjectToStore = useProjectAndTaskManage((state) => state.addProject);
+    const deleteProjectFromStore = useProjectAndTaskManage((state) => state.deleteProject);
 
     useEffect(() => {
-        localStorage.setItem("project", JSON.stringify(project));
-    }, [project]);
+        const storedProjects = parseStoredProjects(localStorage.getItem("project"));
+        initializeProjects(storedProjects);
+        initializeTasks(storedProjects.flatMap((proj) => proj.extendedTasks));
+    }, [initializeProjects, initializeTasks]);
+
+    useEffect(() => {
+        const projectsWithTasks = project.map((proj) => ({
+            ...proj,
+            extendedTasks: tasks.filter((task) => task.projectId === proj.id),
+        }));
+
+        localStorage.setItem("project", JSON.stringify(projectsWithTasks));
+    }, [project, tasks]);
 
     const [projectInput, setProjectInput] = useState("");
     const [fieldInput, setFieldInput] = useState("");
@@ -67,11 +81,7 @@ export function ProjectCard() {
             extendedTasks: [],
         };
 
-        setProject((prev) => {
-            const nextProjects = [...prev, newProject];
-            localStorage.setItem("project", JSON.stringify(nextProjects));
-            return nextProjects;
-        });
+        addProjectToStore(newProject);
         setProjectInput("");
         setFieldInput("");
         setSearchTerm("");
@@ -80,7 +90,7 @@ export function ProjectCard() {
     };
 
     const deleteProject = (id: number) => {
-        setProject((prev) => prev.filter((proj) => proj.id !== id));
+        deleteProjectFromStore(id);
     };
 
     const searchProjects = (textProject: string) => {
@@ -93,17 +103,16 @@ export function ProjectCard() {
     };
 
     const importanceOrder: Record<string, number> = { low: 1, medium: 2, high: 3 };
-    const task = project.flatMap((proj) => proj.extendedTasks);
 
     const projectLength = project.length;
     const completedProjects = project.filter((proj) => {
-        const projTasks = task.filter((t) => t.projectId === proj.id);
+        const projTasks = tasks.filter((t) => t.projectId === proj.id);
         return projTasks.length > 0 && projTasks.every((t) => t.isCompleted);
     }).length;
     const projectProgress = projectLength === 0 ? 0 : Math.round((completedProjects / projectLength) * 100);
 
-    const taskLength = task.length;
-    const completedTasks = task.filter((t) => t.isCompleted).length;
+    const taskLength = tasks.length;
+    const completedTasks = tasks.filter((t) => t.isCompleted).length;
     const taskProgress = taskLength === 0 ? 0 : Math.round((completedTasks / taskLength) * 100);
 
     let displayedProjects = project;
@@ -140,8 +149,8 @@ export function ProjectCard() {
     }
     if (sortCompleted === "completed-to-In Progress") {
         displayedProjects = [...displayedProjects].sort((a, b) => {
-            const aTasks = task.filter((t) => t.projectId === a.id);
-            const bTasks = task.filter((t) => t.projectId === b.id);
+            const aTasks = tasks.filter((t) => t.projectId === a.id);
+            const bTasks = tasks.filter((t) => t.projectId === b.id);
             const aCompleted = aTasks.length > 0 && aTasks.every((t) => t.isCompleted);
             const bCompleted = bTasks.length > 0 && bTasks.every((t) => t.isCompleted);
             return Number(bCompleted) - Number(aCompleted);
@@ -150,8 +159,8 @@ export function ProjectCard() {
 
     if (sortCompleted === "In Progress-to-completed") {
         displayedProjects = [...displayedProjects].sort((a, b) => {
-            const aTasks = task.filter((t) => t.projectId === a.id);
-            const bTasks = task.filter((t) => t.projectId === b.id);
+            const aTasks = tasks.filter((t) => t.projectId === a.id);
+            const bTasks = tasks.filter((t) => t.projectId === b.id);
             const aCompleted = aTasks.length > 0 && aTasks.every((t) => t.isCompleted);
             const bCompleted = bTasks.length > 0 && bTasks.every((t) => t.isCompleted);
             return Number(aCompleted) - Number(bCompleted);
@@ -230,7 +239,7 @@ export function ProjectCard() {
             </div>
         </div>
         {displayedProjects.map((proj) => {
-            const projTasks = task.filter((t) => t.projectId === proj.id);
+            const projTasks = tasks.filter((t) => t.projectId === proj.id);
             const isCompleted = projTasks.length > 0 && projTasks.every((t) => t.isCompleted);
             return (
             <li key={proj.id} className="grid list-none grid-cols-[minmax(0,1.4fr)_minmax(120px,.6fr)_minmax(120px,.6fr)_minmax(140px,.5fr)] items-stretch gap-0 border-b bg-gray-50 hover:font-bold">

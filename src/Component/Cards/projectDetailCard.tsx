@@ -1,15 +1,19 @@
-import { useState } from "react";
-import type { Project } from "../../Shared/types/types";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { parseStoredProjects } from "../../Shared/schema/schema";
+import { useProjectAndTaskManage } from "../../Shared/components/projectsandTaskManager/projectAndTaskManage";
   
     export function ProjectDetailCard(){
-        const [project] = useState<Project[]>(() =>{
-            return parseStoredProjects(localStorage.getItem("project"));
-        });
+        const projects = useProjectAndTaskManage((state) => state.projects);
+        const initializeProjects = useProjectAndTaskManage((state) => state.initializeProjects);
+
+        useEffect(() => {
+            initializeProjects(parseStoredProjects(localStorage.getItem("project")));
+        }, [initializeProjects]);
+
         const { projectId } = useParams();
 
-        const projectDetail = project.find((p) => p.id === Number(projectId));
+        const projectDetail = projects.find((p) => p.id === Number(projectId));
         if(!projectDetail){
             return <div>Project not found</div>;
         }

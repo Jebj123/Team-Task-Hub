@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import type { Project } from '../Shared/types/types';
 import { ProjectDetailCard } from '../Component/Cards/projectDetailCard';
 import { InputField } from '../Component/Field/InputField';
 import { useParams } from 'react-router-dom';
@@ -9,13 +8,19 @@ import { Button } from '../Shared/components/ui/button';
 import { SelectField } from '../Component/Field/SelectField';
 import { parseStoredProjects } from '../Shared/schema/schema';
 import upAndDownArrow from "../assets/UpandDown.png"
+import { useProjectAndTaskManage } from '../Shared/components/projectsandTaskManager/projectAndTaskManage';
 
 
 
 export const ViewProjectDetails = () => {
-    const [project, setProject] = useState<Project[]>(() => {
-                return parseStoredProjects(localStorage.getItem("project"));
-      });
+    const projects = useProjectAndTaskManage((state) => state.projects);
+    const tasks = useProjectAndTaskManage((state) => state.tasks);
+    const initializeProjects = useProjectAndTaskManage((state) => state.initializeProjects);
+    const initializeTasks = useProjectAndTaskManage((state) => state.initializeTasks);
+    const addTaskToStore = useProjectAndTaskManage((state) => state.addTask);
+    const deleteTaskFromStore = useProjectAndTaskManage((state) => state.deleteTask);
+    const toggleTaskInStore = useProjectAndTaskManage((state) => state.toggleTaskCompletion);
+    
 
       const { projectId } = useParams();
       const selectedProjectId = Number(projectId);
@@ -30,10 +35,20 @@ export const ViewProjectDetails = () => {
       const [sortLetterOrder, setSortLetterOrder] = useState<"none" | "a-to-z" | "z-to-a">("none");
       const [sortStatusOrder, setSortStatusOrder] = useState<"none" | "completed-to-incomplete" | "incomplete-to-completed">("none");
 
-      
       useEffect(() => {
-          localStorage.setItem("project", JSON.stringify(project));
-      }, [project]);
+          const storedProjects = parseStoredProjects(localStorage.getItem("project"));
+          initializeProjects(storedProjects);
+          initializeTasks(storedProjects.flatMap((project) => project.extendedTasks));
+      }, [initializeProjects, initializeTasks]);
+
+      useEffect(() => {
+          const projectsWithTasks = projects.map((project) => ({
+              ...project,
+              extendedTasks: tasks.filter((task) => task.projectId === project.id),
+          }));
+
+          localStorage.setItem("project", JSON.stringify(projectsWithTasks));
+      }, [projects, tasks]);
 
       const addTask = (inputValue: string, importance: string) => {
           const trimmedTaskInput = inputValue.trim();
@@ -56,13 +71,7 @@ export const ViewProjectDetails = () => {
               taskImportance: trimmedImportance,
           };
 
-          setProject((prev) =>
-              prev.map((p) =>
-                  p.id === selectedProjectId
-                      ? { ...p, extendedTasks: [...p.extendedTasks, newTask] }
-                      : p
-              )
-          );
+          addTaskToStore(newTask);
           setTaskInput("");
           setFieldInput("");
           setSearchTerm("");
@@ -89,33 +98,15 @@ export const ViewProjectDetails = () => {
 
       // eyða verkefni
       const deleteTask = (taskId: number) => {
-          setProject((prev) =>
-              prev.map((p) =>
-                  p.id === selectedProjectId
-                      ? { ...p, extendedTasks: p.extendedTasks.filter((t) => t.taskId !== taskId) }
-                      : p
-              )
-          );
+          deleteTaskFromStore(taskId);
       };
   
       //toggle verkefni
       const toggleTask = (taskId: number) => {
-          setProject((prev) =>
-              prev.map((p) =>
-                  p.id === selectedProjectId
-                      ? {
-                          ...p,
-                          extendedTasks: p.extendedTasks.map((t) =>
-                              t.taskId === taskId ? { ...t, isCompleted: !t.isCompleted } : t
-                          ),
-                        }
-                      : p
-              )
-          );
+          toggleTaskInStore(taskId);
       };
 
-        const selectedProject = project.find((p) => p.id === selectedProjectId);
-        const tasksForSelectedProject = selectedProject?.extendedTasks ?? [];
+        const tasksForSelectedProject = tasks.filter((t) => t.projectId === selectedProjectId);
     
         const completedTasks = tasksForSelectedProject.filter((t) => t.isCompleted).length;
         const totalTasks = tasksForSelectedProject.length;
