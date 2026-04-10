@@ -11,6 +11,7 @@ import upAndDownArrow from "../../src/assets/UpandDown.png";
 
 
 export function ProjectCard() {
+    
     const project = useProjectAndTaskManage((state) => state.projects);
     const tasks = useProjectAndTaskManage((state) => state.tasks);
     const initializeProjects = useProjectAndTaskManage((state) => state.initializeProjects);

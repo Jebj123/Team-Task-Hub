@@ -13,6 +13,7 @@ import { useProjectAndTaskManage } from '../Shared/components/projectsandTaskMan
 
 
 export const ViewProjectDetails = () => {
+    
     const projects = useProjectAndTaskManage((state) => state.projects);
     const tasks = useProjectAndTaskManage((state) => state.tasks);
     const initializeProjects = useProjectAndTaskManage((state) => state.initializeProjects);
