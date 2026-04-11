@@ -9,6 +9,7 @@ import { SelectField } from '../Component/Field/SelectField';
 import { parseStoredProjects } from '../Shared/schema/schema';
 import upAndDownArrow from "../assets/UpandDown.png"
 import { useProjectAndTaskManage } from '../Shared/components/projectsandTaskManager/projectAndTaskManage';
+import NotFound from './404';
 
 
 
@@ -25,6 +26,7 @@ export const ViewProjectDetails = () => {
 
       const { projectId } = useParams();
       const selectedProjectId = Number(projectId);
+    const isValidProjectId = projectId !== undefined && Number.isFinite(selectedProjectId);
 
       const [taskInput, setTaskInput] = useState("");
       const [fieldInput, setFieldInput] = useState("");
@@ -155,6 +157,12 @@ export const ViewProjectDetails = () => {
         }
         if (sortStatusOrder === "incomplete-to-completed") {
             displayedTasks = [...displayedTasks].sort((a, b) => Number(a.isCompleted) - Number(b.isCompleted));
+        }
+
+        const projectExists = projects.some((project) => project.id === selectedProjectId);
+
+        if (!isValidProjectId || !projectExists) {
+            return <NotFound />;
         }
 
 
