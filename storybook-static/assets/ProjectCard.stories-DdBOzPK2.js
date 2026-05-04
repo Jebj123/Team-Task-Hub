@@ -1,0 +1,55 @@
+import{a as e,n as t}from"./chunk-BneVvdWh.js";import{O as n}from"./iframe-DwfviQp3.js";import{t as r}from"./jsx-runtime-D16BNjX-.js";import{n as i,t as a}from"./InputField-DyWGIrIe.js";import{a as o,c as s,d as c,f as l,i as u,l as d,n as f,o as p,p as m,r as h,s as g,t as _,u as v}from"./UpandDown-D_dsvhGx.js";import{n as y,t as b}from"./SelectField-CB9jLj9W.js";function x(){let e=v(e=>e.projects),t=v(e=>e.tasks),n=v(e=>e.initializeProjects),r=v(e=>e.initializeTasks),i=v(e=>e.addProject),s=v(e=>e.deleteProject),[c,d]=(0,S.useState)(!1);(0,S.useEffect)(()=>{let e=u(localStorage.getItem(`project`));n(e),r(e.flatMap(e=>e.extendedTasks)),d(!0)},[n,r]),(0,S.useEffect)(()=>{if(!c)return;let n=e.map(e=>({...e,completed:P(e),extendedTasks:t.filter(t=>t.projectId===e.id)}));localStorage.setItem(`project`,JSON.stringify(n))},[e,t,c]);let[f,p]=(0,S.useState)(``),[m,h]=(0,S.useState)(``),[y,x]=(0,S.useState)(``),[w,T]=(0,S.useState)(``),[E,D]=(0,S.useState)(`none`),[O,k]=(0,S.useState)(`none`),[A,j]=(0,S.useState)(`none`),[M,N]=(0,S.useState)(``),P=e=>{let n=t.filter(t=>t.projectId===e.id);return e.completed||n.length>0&&n.every(e=>e.isCompleted)},F=()=>{k(`none`),j(`none`),D(e=>e===`high-to-low`?`low-to-high`:`high-to-low`)},I=()=>{D(`none`),j(`none`),k(e=>e===`a-to-z`?`z-to-a`:`a-to-z`)},L=()=>{D(`none`),k(`none`),j(e=>e===`completed-to-In Progress`?`In Progress-to-completed`:`completed-to-In Progress`)},R=(t,n)=>{let r=t.trim(),a=n.trim();if(!r){window.alert(`Please enter a project name.`);return}if(!a){window.alert(`Please select an importance level.`);return}let o={id:Date.now(),textProject:r,completed:!1,projectImportance:a,extendedTasks:[]},s=[...e,o];i(o),localStorage.setItem(`project`,JSON.stringify(s)),p(``),h(``),x(``),T(``),N(``)},z=e=>{s(e)},B=e=>{T(e.trim()||``),x(``)},V=e=>{N(e)},H={low:1,medium:2,high:3},U=e.length,W=e.filter(e=>P(e)).length,G=U===0?0:Math.round(W/U*100),K=t.length,q=t.filter(e=>e.isCompleted).length,J=K===0?0:Math.round(q/K*100),Y=e;return w&&(Y=Y.filter(e=>e.textProject.toLowerCase().includes(w.toLowerCase()))),M&&M!==`All`&&(Y=Y.filter(e=>e.projectImportance.toLowerCase()===M.toLowerCase())),O===`a-to-z`&&(Y=[...Y].sort((e,t)=>e.textProject.localeCompare(t.textProject))),O===`z-to-a`&&(Y=[...Y].sort((e,t)=>t.textProject.localeCompare(e.textProject))),E===`high-to-low`&&(Y=[...Y].sort((e,t)=>(H[t.projectImportance.toLowerCase()]??0)-(H[e.projectImportance.toLowerCase()]??0))),E===`low-to-high`&&(Y=[...Y].sort((e,t)=>(H[e.projectImportance.toLowerCase()]??0)-(H[t.projectImportance.toLowerCase()]??0))),A===`completed-to-In Progress`&&(Y=[...Y].sort((e,n)=>{let r=t.filter(t=>t.projectId===e.id),i=t.filter(e=>e.projectId===n.id),a=r.length>0&&r.every(e=>e.isCompleted),o=i.length>0&&i.every(e=>e.isCompleted);return Number(o)-Number(a)})),A===`In Progress-to-completed`&&(Y=[...Y].sort((e,n)=>{let r=t.filter(t=>t.projectId===e.id),i=t.filter(e=>e.projectId===n.id),a=r.length>0&&r.every(e=>e.isCompleted),o=i.length>0&&i.every(e=>e.isCompleted);return Number(a)-Number(o)})),(0,C.jsxs)(`div`,{className:`w-full max-w-6xl pt-7 ml-auto mr-auto`,children:[(0,C.jsxs)(`div`,{className:`grid grid-cols-1 gap-1 pb-10 md:ml-auto md:w-1/2 pl-29`,children:[(0,C.jsx)(`h3`,{className:`text-1xl font-bold `,children:`Search Projects:`}),(0,C.jsxs)(`div`,{className:`flex gap-3 w-full`,children:[(0,C.jsx)(a,{placeholder:`search`,value:y,onChange:e=>x(e.target.value)}),(0,C.jsx)(o,{className:`w-30 h-8 border border-black/20 transition-transform duration-300 hover:scale-110 mt-1`,onClick:()=>B(y),children:`Search`})]})]}),(0,C.jsxs)(`div`,{className:`grid grid-cols-2 gap-2 items-center justify-center w-full pl-57 pb-10 `,children:[(0,C.jsxs)(g,{className:`w-60 h-50 items-center justify-center gap-2`,children:[(0,C.jsx)(`h1`,{className:`text-2xl text-center font-bold underline`,children:`Projects Completed`}),(0,C.jsxs)(`p`,{className:`text-2xl font-bold`,children:[W,`/`,U]}),G>0&&(0,C.jsx)(`div`,{className:`w-1/2 bg-red-400 rounded-full h-4 mb-4`,children:(0,C.jsxs)(`div`,{className:`bg-green-400 h-4 rounded-full items-center flex justify-center`,style:{width:`${G}%`},children:[G,`%`]})}),G===100&&(0,C.jsx)(`h3`,{className:`text-green-500 font-bold `,children:`Good job!`})]}),(0,C.jsxs)(g,{className:`w-60 h-50 items-center justify-center gap-2`,children:[(0,C.jsx)(`h1`,{className:`text-2xl font-bold underline text-center`,children:`Tasks Completed`}),(0,C.jsxs)(`p`,{className:`text-2xl font-bold`,children:[q,`/`,K]}),J>0&&(0,C.jsx)(`div`,{className:`w-1/2 bg-red-400 rounded-full h-4 mb-4`,children:(0,C.jsxs)(`div`,{className:`bg-green-400 h-4 rounded-full items-center flex justify-center`,style:{width:`${J}%`},children:[J,`%`]})}),J===100&&(0,C.jsx)(`h3`,{className:`text-green-500 font-bold `,children:`Good job!`})]})]}),(0,C.jsx)(`h1`,{className:`flex pb-10 text-5xl underline font-bold items-center justify-center`,children:`Project`}),(0,C.jsxs)(`div`,{className:`items-center justify-center w-full flex-col`,children:[(0,C.jsxs)(`div`,{className:`flex flex-wrap items-center gap-4`,children:[(0,C.jsx)(`h1`,{className:`text-1xl font-bold`,children:`Add Project:`}),(0,C.jsx)(a,{placeholder:`Project Name`,value:f,onChange:e=>{p(e.target.value)}}),(0,C.jsx)(b,{placeholder:`Importance`,value:m,onChange:h}),(0,C.jsx)(o,{type:`button`,onClick:()=>R(f,m),className:`w-30 h-8 border border-black transition-transform duration-300 hover:scale-110`,children:`Add Project`}),(0,C.jsxs)(`div`,{className:`flex flex-wrap items-center gap-2 md:ml-auto`,children:[(0,C.jsx)(`h1`,{className:`text-1xl font-bold`,children:`Filter by importance:`}),[`All`,`High`,`Medium`,`Low`].map(e=>(0,C.jsx)(o,{variant:M===e||e===`All`&&!M?`default`:`outline`,onClick:()=>V(e),className:` hover:bg-gray-200 hover:scale-102`,children:e},e))]})]}),(0,C.jsx)(`br`,{}),(0,C.jsxs)(`div`,{className:`grid grid-cols-1 rounded-sm border-2 w-full overflow-hidden`,children:[(0,C.jsxs)(`div`,{className:`grid grid-cols-[minmax(0,1.4fr)_minmax(120px,.6fr)_minmax(120px,.6fr)_minmax(140px,.5fr)] items-stretch gap-0 border-b bg-gray-100`,children:[(0,C.jsx)(`div`,{className:`px-4 py-3 border-r flex items-center`,children:(0,C.jsxs)(`h2`,{className:`text-2xl font-bold underline text-left cursor-pointer`,onClick:I,children:[`Project`,(0,C.jsx)(`img`,{src:_,alt:`Sort Arrow`,className:`w-4 inline-block ml-2`})]})}),(0,C.jsx)(`div`,{className:`px-4 py-3 border-r flex items-center`,children:(0,C.jsxs)(`h2`,{className:`text-2xl font-bold underline text-left cursor-pointer`,onClick:F,children:[`Importance`,(0,C.jsx)(`img`,{src:_,alt:`Sort Arrow`,className:`w-4 inline-block ml-2`})]})}),(0,C.jsx)(`div`,{className:`px-4 py-3 border-r flex items-center`,children:(0,C.jsxs)(`h2`,{className:`text-2xl font-bold text-left underline cursor-pointer`,onClick:L,children:[`Project status`,(0,C.jsx)(`img`,{src:_,alt:`Sort Arrow`,className:`w-4 inline-block ml-2`})]})}),(0,C.jsx)(`div`,{className:`px-4 py-3 flex items-center`,children:(0,C.jsx)(`h2`,{className:`text-2xl font-bold text-left underline`,children:`Delete`})})]}),Y.map(e=>{let n=t.filter(t=>t.projectId===e.id),r=n.length>0&&n.every(e=>e.isCompleted);return(0,C.jsxs)(`li`,{className:`grid list-none grid-cols-[minmax(0,1.4fr)_minmax(120px,.6fr)_minmax(120px,.6fr)_minmax(140px,.5fr)] items-stretch gap-0 border-b bg-gray-50 hover:font-bold`,children:[(0,C.jsx)(`div`,{className:`px-4 py-3 border-r flex items-center`,children:(0,C.jsx)(l,{to:`/user/task/${e.id}`,children:(0,C.jsx)(`h2`,{className:`text-shadow-lg text-2xl`,children:e.textProject})})}),(0,C.jsx)(`div`,{className:`px-4 py-3 border-r flex items-center`,children:(0,C.jsx)(`h1`,{className:`text-xl capitalize`,children:e.projectImportance})}),(0,C.jsx)(`div`,{className:`px-4 py-3 border-r flex items-center`,children:r?(0,C.jsx)(`h3`,{className:`text-green-500 font-bold`,children:`Completed`}):(0,C.jsx)(`h3`,{className:`text-red-500 font-bold`,children:`In Progress`})}),(0,C.jsx)(`div`,{className:`px-4 py-3 flex items-center`,children:(0,C.jsx)(`button`,{onClick:()=>z(e.id),type:`button`,className:`text-red-500 w-20 h-8 border rounded-sm transform transition duration-300 hover:scale-110`,children:`Delete`})})]},e.id)})]})]})]})}var S,C,w=t((()=>{S=e(n(),1),c(),i(),s(),p(),y(),h(),d(),f(),C=r(),x.__docgenInfo={description:``,methods:[],displayName:`ProjectCard`}})),T,E,D,O,k,A;t((()=>{c(),d(),w(),T=r(),E={title:`Pages/ProjectCard`,component:x,parameters:{layout:`fullscreen`},decorators:[e=>(0,T.jsx)(m,{children:(0,T.jsx)(e,{})})]},D={decorators:[e=>(v.setState({projects:[],tasks:[]}),(0,T.jsx)(e,{}))]},O={decorators:[e=>(v.setState({projects:[{id:1,textProject:`Build landing page`,completed:!1,projectImportance:`high`,extendedTasks:[]},{id:2,textProject:`Write unit tests`,completed:!0,projectImportance:`medium`,extendedTasks:[]},{id:3,textProject:`Fix auth bug`,completed:!1,projectImportance:`low`,extendedTasks:[]}],tasks:[]}),(0,T.jsx)(e,{}))]},k={decorators:[e=>(v.setState({projects:[{id:1,textProject:`Deploy to production`,completed:!0,projectImportance:`high`,extendedTasks:[]},{id:2,textProject:`Code review`,completed:!0,projectImportance:`medium`,extendedTasks:[]}],tasks:[]}),(0,T.jsx)(e,{}))]},D.parameters={...D.parameters,docs:{...D.parameters?.docs,source:{originalSource:`{
+  decorators: [Story => {
+    useProjectAndTaskManage.setState({
+      projects: [],
+      tasks: []
+    });
+    return <Story />;
+  }]
+}`,...D.parameters?.docs?.source}}},O.parameters={...O.parameters,docs:{...O.parameters?.docs,source:{originalSource:`{
+  decorators: [Story => {
+    useProjectAndTaskManage.setState({
+      projects: [{
+        id: 1,
+        textProject: 'Build landing page',
+        completed: false,
+        projectImportance: 'high',
+        extendedTasks: []
+      }, {
+        id: 2,
+        textProject: 'Write unit tests',
+        completed: true,
+        projectImportance: 'medium',
+        extendedTasks: []
+      }, {
+        id: 3,
+        textProject: 'Fix auth bug',
+        completed: false,
+        projectImportance: 'low',
+        extendedTasks: []
+      }],
+      tasks: []
+    });
+    return <Story />;
+  }]
+}`,...O.parameters?.docs?.source}}},k.parameters={...k.parameters,docs:{...k.parameters?.docs,source:{originalSource:`{
+  decorators: [Story => {
+    useProjectAndTaskManage.setState({
+      projects: [{
+        id: 1,
+        textProject: 'Deploy to production',
+        completed: true,
+        projectImportance: 'high',
+        extendedTasks: []
+      }, {
+        id: 2,
+        textProject: 'Code review',
+        completed: true,
+        projectImportance: 'medium',
+        extendedTasks: []
+      }],
+      tasks: []
+    });
+    return <Story />;
+  }]
+}`,...k.parameters?.docs?.source}}},A=[`Empty`,`WithProjects`,`AllCompleted`]}))();export{k as AllCompleted,D as Empty,O as WithProjects,A as __namedExportsOrder,E as default};

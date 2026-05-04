@@ -8,9 +8,10 @@ type InputFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
 
 export function InputField({ value, placeholder, ...props}: InputFieldProps){
     return (
-        <Input 
+        <Input
+        {...props}
         placeholder={placeholder}
-        className="bg-white w-full h-10" 
+        className="bg-white w-full h-10"
         value={value}
         onChange={(e) => {
             props.onChange(e);

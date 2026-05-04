@@ -1,0 +1,1 @@
+import{n as e}from"./chunk-BneVvdWh.js";import{n as t,t as n}from"./404-DWS3ThcT.js";var r,i,a;e((()=>{t(),r={title:`Pages/NotFound`,component:n,parameters:{layout:`fullscreen`}},i={},i.parameters={...i.parameters,docs:{...i.parameters?.docs,source:{originalSource:`{}`,...i.parameters?.docs?.source}}},a=[`Default`]}))();export{i as Default,a as __namedExportsOrder,r as default};
