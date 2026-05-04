@@ -9,6 +9,7 @@ import { SelectField } from '../Component/Field/SelectField';
 import { parseStoredProjects } from '../Shared/schema/schema';
 import upAndDownArrow from "../assets/UpandDown.png"
 import { useProjectAndTaskManage } from '../Shared/components/projectsandTaskManager/projectAndTaskManage';
+import type { Project } from '../Shared/types/types';
 import NotFound from './404';
 
 
@@ -44,9 +45,15 @@ export const ViewProjectDetails = () => {
           initializeTasks(storedProjects.flatMap((project) => project.extendedTasks));
       }, [initializeProjects, initializeTasks]);
 
+      const getProjectIsCompleted = (project: Project) => {
+          const projectTasks = tasks.filter((task) => task.projectId === project.id);
+          return project.completed || (projectTasks.length > 0 && projectTasks.every((task) => task.isCompleted));
+      };
+
       useEffect(() => {
           const projectsWithTasks = projects.map((project) => ({
               ...project,
+              completed: getProjectIsCompleted(project),
               extendedTasks: tasks.filter((task) => task.projectId === project.id),
           }));
 
