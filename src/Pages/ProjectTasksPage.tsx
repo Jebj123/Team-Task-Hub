@@ -103,7 +103,7 @@ export const ViewProjectDetails = () => {
       const sortCompletedStatus = () => {
           setSortOrder("none");
           setSortLetterOrder("none");
-            setSortStatusOrder((prev) => (prev === "completed-to-incomplete" ? "incomplete-to-completed" : "completed-to-incomplete"));
+            setSortStatusOrder((prev) => (prev === "incomplete-to-completed" ? "completed-to-incomplete" : "incomplete-to-completed"));
       };
 
       // eyða verkefni

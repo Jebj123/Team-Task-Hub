@@ -39,7 +39,7 @@ afterEach(() => {
     window.localStorage.clear();
 });
 
-describe("ViewProjectDetails - Add Task", () => {
+describe("ProjectTaskPage - Add Task", () => {
     it("adds a new task when task name and importance are provided", async () => {
         renderPage();
 
@@ -154,14 +154,14 @@ describe("ViewProjectDetails - Add Task", () => {
             {
                 taskId: 1,
                 projectId: PROJECT_ID,
-                textTask: "Banana Task",
+                textTask: "B Task",
                 isCompleted: false,
                 taskImportance: "medium",
             },
             {
                 taskId: 2,
                 projectId: PROJECT_ID,
-                textTask: "Apple Task",
+                textTask: "A Task",
                 isCompleted: false,
                 taskImportance: "medium",
             },
@@ -180,8 +180,16 @@ describe("ViewProjectDetails - Add Task", () => {
 
         await waitFor(() => {
             const taskRows = screen.getAllByRole("listitem");
-            expect(within(taskRows[0]).getByText(/apple task/i)).toBeTruthy();
-            expect(within(taskRows[1]).getByText(/banana task/i)).toBeTruthy();
+            expect(within(taskRows[0]).getByText(/a task/i)).toBeTruthy();
+            expect(within(taskRows[1]).getByText(/b task/i)).toBeTruthy();
+        });
+
+        fireEvent.click(taskHeader!);
+
+        await waitFor(() => {
+            const taskRows = screen.getAllByRole("listitem");
+            expect(within(taskRows[0]).getByText(/b task/i)).toBeTruthy();
+            expect(within(taskRows[1]).getByText(/a task/i)).toBeTruthy();
         });
     });
 
@@ -221,6 +229,14 @@ describe("ViewProjectDetails - Add Task", () => {
             expect(within(taskRows[0]).getByText(/high task/i)).toBeTruthy();
             expect(within(taskRows[1]).getByText(/medium task/i)).toBeTruthy();
         });
+        
+        fireEvent.click(importanceHeader!);
+
+        await waitFor(() => {
+            const taskRows = screen.getAllByRole("listitem");
+            expect(within(taskRows[0]).getByText(/medium task/i)).toBeTruthy();
+            expect(within(taskRows[1]).getByText(/high task/i)).toBeTruthy();
+        });
     });
 
     // sorting test by completion status
@@ -256,8 +272,164 @@ describe("ViewProjectDetails - Add Task", () => {
 
         await waitFor(() => {
             const taskRows = screen.getAllByRole("listitem");
+            expect(within(taskRows[0]).getByText(/incomplete task/i)).toBeTruthy();
+            expect(within(taskRows[1]).getByText(/completed task/i)).toBeTruthy();
+        });
+        fireEvent.click(statusHeader!);
+
+        await waitFor(() => {
+            const taskRows = screen.getAllByRole("listitem");
             expect(within(taskRows[0]).getByText(/completed task/i)).toBeTruthy();
             expect(within(taskRows[1]).getByText(/incomplete task/i)).toBeTruthy();
         });
+    });
+
+    it('toggles task completion status when checkbox is clicked', async () => {
+        const task = {
+            taskId: 1,
+            projectId: PROJECT_ID,
+            textTask: "Toggle Completion Task",
+            isCompleted: false,
+            taskImportance: "medium",
+        };
+        useProjectAndTaskManage.setState((state) => ({
+            tasks: [...state.tasks, task],
+        }));
+
+        renderPage();
+
+        expect(await screen.findByText(/toggle completion task/i)).toBeTruthy();
+
+        const checkbox = screen.getByRole("checkbox");
+        expect(checkbox).not.toBeChecked();
+        fireEvent.click(checkbox);
+
+        await waitFor(() => {
+            expect(checkbox).toBeChecked();
+        });
+    });
+    
+    it('filters tasks when search is submitted', async () => {
+        const tasks = [
+            {
+                taskId: 1,
+                projectId: PROJECT_ID,
+                textTask: "First Task",
+                isCompleted: false,
+                taskImportance: "medium",
+            },
+            {
+                taskId: 2,
+                projectId: PROJECT_ID,
+                textTask: "Second Task",
+                isCompleted: false,
+                taskImportance: "medium",
+            },
+        ];
+        useProjectAndTaskManage.setState((state) => ({
+            tasks: [...state.tasks, ...tasks],
+        }));
+
+        renderPage();
+        
+        expect(await screen.findByText(/first task/i)).toBeTruthy();
+
+        const searchInput = screen.getByPlaceholderText(/^search$/i);
+        fireEvent.change(searchInput, { target: { value: "First" } });
+        fireEvent.click(screen.getByRole("button", { name: /^search$/i }));
+        await waitFor(() => {
+            expect(screen.getByText(/first task/i)).toBeTruthy();
+            expect(screen.queryByText(/second task/i)).toBeNull();
+        });
+    });
+    it('filters task by importance when importance button is clicked', async () => {
+        const tasks = [
+            {
+                taskId: 1,
+                projectId: PROJECT_ID,
+                textTask: "High Importance Task",
+                isCompleted: false,
+                taskImportance: "high",
+            },
+            {
+                taskId: 2,
+                projectId: PROJECT_ID,
+                textTask: "Medium Importance Task",
+                isCompleted: false,
+                taskImportance: "medium",
+            },    
+            {
+                taskId: 3,
+                projectId: PROJECT_ID,
+                textTask: "Low Importance Task",
+                isCompleted: false,
+                taskImportance: "low",
+            },
+        ];
+        useProjectAndTaskManage.setState((state) => ({
+            tasks: [...state.tasks, ...tasks],
+        }));
+
+        renderPage();
+
+        expect(await screen.findByText(/high importance task/i)).toBeTruthy();
+        expect(screen.getByText(/medium importance task/i)).toBeTruthy();
+        expect(screen.getByText(/low importance task/i)).toBeTruthy();
+        const filterLabels = screen.getAllByText(/filter by importance/i);
+        expect(filterLabels.length).toBeGreaterThan(0);
+        const filterSection = filterLabels[0].parentElement;
+        expect(filterSection).not.toBeNull();
+
+        const highFilterButton = within(filterSection!).getByRole("button", { name: /high/i });
+        const mediumFilterButton = within(filterSection!).getByRole("button", { name: /medium/i });
+        const lowFilterButton = within(filterSection!).getByRole("button", { name: /low/i });
+        
+        fireEvent.click(highFilterButton);
+        await waitFor(() => {
+            expect(screen.getByText(/high importance task/i)).toBeTruthy();
+            expect(screen.queryByText(/medium importance task/i)).toBeNull();
+            expect(screen.queryByText(/low importance task/i)).toBeNull();
+        });
+        fireEvent.click(mediumFilterButton);
+        await waitFor(() => {
+            expect(screen.getByText(/medium importance task/i)).toBeTruthy();
+            expect(screen.queryByText(/high importance task/i)).toBeNull();
+            expect(screen.queryByText(/low importance task/i)).toBeNull();
+        });
+        fireEvent.click(lowFilterButton);
+        await waitFor(() => {
+            expect(screen.getByText(/low importance task/i)).toBeTruthy();
+            expect(screen.queryByText(/high importance task/i)).toBeNull();
+            expect(screen.queryByText(/medium importance task/i)).toBeNull();
+        });
+    });
+    it('Calculates and displays task completion percentage correctly', async () => {
+        const tasks = [
+            {
+                taskId: 1,
+                projectId: PROJECT_ID,
+                textTask: "Completed Task",
+                isCompleted: true,
+                taskImportance: "medium",
+            },
+            {
+                taskId: 2,
+                projectId: PROJECT_ID,
+                textTask: "Incomplete Task",
+                isCompleted: false,
+                taskImportance: "medium",
+            },
+        ];
+        useProjectAndTaskManage.setState((state) => ({
+            tasks: [...state.tasks, ...tasks],
+        }));
+
+        renderPage();
+
+        expect(await screen.findByText(/completed task/i)).toBeTruthy();
+        expect(screen.getByText(/incomplete task/i)).toBeTruthy();
+
+        expect(screen.getByText("1/2")).toBeTruthy();
+        expect(screen.getByText("50%")).toBeTruthy();
     });
 });

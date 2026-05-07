@@ -24,6 +24,7 @@ type Story = StoryObj<typeof meta>;
 export const Empty: Story = {
   decorators: [
     (Story) => {
+      window.localStorage.clear();
       useProjectAndTaskManage.setState({ projects: [], tasks: [] });
       return <Story />;
     },

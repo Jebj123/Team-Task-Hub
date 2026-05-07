@@ -147,4 +147,145 @@ describe('Adding project', () => {
         cy.get('li span.min-w-0').eq(1).should('have.text', 'B Task');
         cy.get('li span.min-w-0').eq(2).should('have.text', 'C Task');
     });
+    it('sorts projects by importance when clicking the importance header', () => {
+        const projects = [
+            { id: 1, textProject: 'Project 1', completed: false, projectImportance: 'medium', extendedTasks: [] }, 
+            { id: 2, textProject: 'Project 2', completed: false, projectImportance: 'high', extendedTasks: [] },
+            { id: 3, textProject: 'Project 3', completed: false, projectImportance: 'low', extendedTasks: [] }
+        ];
+        cy.visit('http://localhost:5173/user/project', {
+            onBeforeLoad(win) {
+                win.localStorage.setItem('project', JSON.stringify(projects));
+            }
+        });
+        cy.contains('h2', 'Importance').click();
+        cy.get('li').eq(0).should('contain.text', 'Project 2');
+        cy.get('li').eq(1).should('contain.text', 'Project 1');
+        cy.get('li').eq(2).should('contain.text', 'Project 3');
+    });
+    it('sorts tasks by importance when clicking the importance header', () => {
+        const project = [{
+            id: 1,
+            textProject: 'Test Project',
+            completed: false,
+            projectImportance: 'high',
+            extendedTasks: [
+                { taskId: 1, projectId: 1, textTask: 'Task 1', taskImportance: 'medium', isCompleted: false },
+                { taskId: 2, projectId: 1, textTask: 'Task 2', taskImportance: 'high', isCompleted: false },
+                { taskId: 3, projectId: 1, textTask: 'Task 3', taskImportance: 'low', isCompleted: false }
+            ]
+        }];
+        cy.visit('http://localhost:5173/user/task/1', {
+            onBeforeLoad(win) {
+                win.localStorage.setItem('project', JSON.stringify(project));
+            }
+        });
+        cy.contains('h1.cursor-pointer', 'Importance').click();
+        cy.get('li').eq(0).should('contain.text', 'Task 2');
+        cy.get('li').eq(1).should('contain.text', 'Task 1');
+        cy.get('li').eq(2).should('contain.text', 'Task 3');
+    });
+    it('sorts project by Project status when clicking the status header', () => {
+        const projects = [
+            { id: 1, textProject: 'Project 1', completed: true, projectImportance: 'medium', extendedTasks: [] }, 
+            { id: 2, textProject: 'Project 2', completed: false, projectImportance: 'high', extendedTasks: [] },
+            { id: 3, textProject: 'Project 3', completed: true, projectImportance: 'low', extendedTasks: [] }
+        ];
+        cy.visit('http://localhost:5173/user/project', {
+            onBeforeLoad(win) {
+                win.localStorage.setItem('project', JSON.stringify(projects));
+            }
+        });
+        cy.contains('h2', 'Project status').click();
+        cy.get('li').eq(0).should('contain.text', 'Project 2');
+        cy.get('li').eq(1).should('contain.text', 'Project 1');
+        cy.get('li').eq(2).should('contain.text', 'Project 3');
+    });
+    it('sorts tasks by Task status when clicking the status header', () => {
+        const project = [{
+            id: 1,
+            textProject: 'Test Project',
+            completed: false,
+            projectImportance: 'high',
+            extendedTasks: [
+                { taskId: 1, projectId: 1, textTask: 'Task 1', taskImportance: 'medium', isCompleted: true },
+                { taskId: 2, projectId: 1, textTask: 'Task 2', taskImportance: 'high', isCompleted: false },
+                { taskId: 3, projectId: 1, textTask: 'Task 3', taskImportance: 'low', isCompleted: true }
+            ]
+        }];
+        cy.visit('http://localhost:5173/user/task/1', {
+            onBeforeLoad(win) {
+                win.localStorage.setItem('project', JSON.stringify(project));
+            }
+        });
+        cy.contains('h1.cursor-pointer', 'Status').click();
+        cy.get('li').eq(0).should('contain.text', 'Task 2');
+        cy.get('li').eq(1).should('contain.text', 'Task 1');
+        cy.get('li').eq(2).should('contain.text', 'Task 3');
+    });
+    it('Project should filter by importance when selecting either high, medium or low in the filter buttons', () => {
+        const projects = [
+            { id: 1, textProject: 'Project 1', completed: false, projectImportance: 'medium', extendedTasks: [] }, 
+            { id: 2, textProject: 'Project 2', completed: false, projectImportance: 'high', extendedTasks: [] },
+            { id: 3, textProject: 'Project 3', completed: false, projectImportance: 'low', extendedTasks: [] }
+        ];
+        cy.visit('http://localhost:5173/user/project', {
+            onBeforeLoad(win) {
+                win.localStorage.setItem('project', JSON.stringify(projects));
+            }
+        });
+        cy.get('button').contains('High').click();
+        cy.contains('Project 2').should('be.visible');
+        cy.contains('Project 1').should('not.exist');
+        cy.contains('Project 3').should('not.exist');
+    });
+    it('Tasks should filter by importance when selecting either high, medium or low in the filter buttons', () => {
+        const project = [{
+            id: 1,
+            textProject: 'Test Project',
+            completed: false,
+            projectImportance: 'high',  
+            extendedTasks: [
+                { taskId: 1, projectId: 1, textTask: 'Task 1', taskImportance: 'medium', isCompleted: false },
+                { taskId: 2, projectId: 1, textTask: 'Task 2', taskImportance: 'high', isCompleted: false },
+                { taskId: 3, projectId: 1, textTask: 'Task 3', taskImportance: 'low', isCompleted: false }
+            ]
+        }];
+        cy.visit('http://localhost:5173/user/task/1', {
+            onBeforeLoad(win) {
+                win.localStorage.setItem('project', JSON.stringify(project));
+            }   
+
+        });
+        cy.get('button').contains('Medium').click();
+        cy.contains('Task 1').should('be.visible');
+        cy.contains('Task 2').should('not.exist');
+        cy.contains('Task 3').should('not.exist');
+    });
+
+    it('full user flow: create project, add task, mark task complete', () => {
+        cy.clearLocalStorage();
+        cy.visit('http://localhost:5173/user/project');
+
+        // create project
+        cy.get('input[placeholder="Project Name"]').type('My Project');
+        cy.get('button[role="combobox"]').click();
+        cy.get('[data-slot="select-item"]').contains('High').click();
+        cy.get('button').contains('Add Project').click();
+        cy.contains('My Project').should('be.visible');
+
+        // click the project
+        cy.contains('h2', 'My Project').click();
+
+        // add the task
+        cy.get('input[placeholder="Task Name"]').type('My Task');
+        cy.get('button[role="combobox"]').click();
+        cy.get('[data-slot="select-item"]').contains('Medium').click();
+        cy.get('button').contains('Add Task').click();
+        cy.contains('My Task').should('be.visible');
+
+        // mark the task as complete
+        cy.contains('My Task').closest('li').find('[data-slot="checkbox"]').click();
+        cy.contains('My Task').closest('li').find('[data-slot="checkbox"]').should('have.attr', 'data-state', 'checked');
+    });
 });

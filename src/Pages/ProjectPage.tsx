@@ -71,7 +71,7 @@ export function ProjectCard() {
     const sortCompletedStatus = () => {
         setSortOrder("none");
         setSortLetterOrder("none");
-        setSortCompleted((prev) => (prev === "completed-to-In Progress" ? "In Progress-to-completed" : "completed-to-In Progress"));
+        setSortCompleted((prev) => (prev === "In Progress-to-completed" ? "completed-to-In Progress" : "In Progress-to-completed"));
     }
 
     const addProject = (inputValue: string, importance: string) => {
@@ -170,23 +170,15 @@ export function ProjectCard() {
         );
     }
     if (sortCompleted === "completed-to-In Progress") {
-        displayedProjects = [...displayedProjects].sort((a, b) => {
-            const aTasks = tasks.filter((t) => t.projectId === a.id);
-            const bTasks = tasks.filter((t) => t.projectId === b.id);
-            const aCompleted = aTasks.length > 0 && aTasks.every((t) => t.isCompleted);
-            const bCompleted = bTasks.length > 0 && bTasks.every((t) => t.isCompleted);
-            return Number(bCompleted) - Number(aCompleted);
-        });
+        displayedProjects = [...displayedProjects].sort((a, b) =>
+            Number(getProjectIsCompleted(b)) - Number(getProjectIsCompleted(a))
+        );
     }
 
     if (sortCompleted === "In Progress-to-completed") {
-        displayedProjects = [...displayedProjects].sort((a, b) => {
-            const aTasks = tasks.filter((t) => t.projectId === a.id);
-            const bTasks = tasks.filter((t) => t.projectId === b.id);
-            const aCompleted = aTasks.length > 0 && aTasks.every((t) => t.isCompleted);
-            const bCompleted = bTasks.length > 0 && bTasks.every((t) => t.isCompleted);
-            return Number(aCompleted) - Number(bCompleted);
-        });
+        displayedProjects = [...displayedProjects].sort((a, b) =>
+            Number(getProjectIsCompleted(a)) - Number(getProjectIsCompleted(b))
+        );
     }
     return(
     <div className="w-full max-w-6xl pt-7 ml-auto mr-auto">
@@ -261,8 +253,7 @@ export function ProjectCard() {
             </div>
         </div>
         {displayedProjects.map((proj) => {
-            const projTasks = tasks.filter((t) => t.projectId === proj.id);
-            const isCompleted = projTasks.length > 0 && projTasks.every((t) => t.isCompleted);
+            const isCompleted = getProjectIsCompleted(proj);
             return (
             <li key={proj.id} className="grid list-none grid-cols-[minmax(0,1.4fr)_minmax(120px,.6fr)_minmax(120px,.6fr)_minmax(140px,.5fr)] items-stretch gap-0 border-b bg-gray-50 hover:font-bold">
             <div className="px-4 py-3 border-r flex items-center">

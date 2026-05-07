@@ -38,7 +38,8 @@ export default defineConfig(async () => ({
     projects: [{
       extends: true,
       test: {
-        environment: "jsdom"
+        environment: "jsdom",
+        setupFiles: ['./src/test-setup.ts']
       }
     }, {
       extends: true,
