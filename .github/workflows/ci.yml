@@ -15,7 +15,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -32,18 +32,19 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build app
-        run: npm run build
+        run: npx vite build
 
       - name: Run Cypress
         uses: cypress-io/github-action@v6
         with:
-          start: npx vite preview --port 5173
+          start: npx vite preview --port 5173 --host
           wait-on: http://localhost:5173
+          wait-on-timeout: 60
           install: false
