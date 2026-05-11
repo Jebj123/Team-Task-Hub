@@ -1,4 +1,4 @@
-import Handshake  from "../assets/Handshake.jpg"
+import Handshake from "../assets/HandShake.jpg"
 
 const Home = () => {
   return (

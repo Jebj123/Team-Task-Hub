@@ -1,4 +1,4 @@
-import CogWheel from '../assets/cogwheel.png'
+import CogWheel from '../assets/Cogwheel.png'
 
 const NotFound = () => {
   return (
