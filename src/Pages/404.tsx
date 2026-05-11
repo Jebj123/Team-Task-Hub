@@ -1,4 +1,3 @@
-import React from 'react'
 import CogWheel from '../assets/cogwheel.png'
 
 const NotFound = () => {
